@@ -27,11 +27,7 @@
 
 效果：
 
-<div style="max-width: 600px; margin: 20px auto 0;">
-  <iframe src="https://friendcards.zwei.de.eu.org/?name=【示例】&specialty=测试一下&link=https://zwei.de.eu.org" 
-          style="border:none; width:100%; height:160px;" 
-          scrolling="no"></iframe>
-</div>
+![{1EDF97F3-C85E-462F-89CE-755C122B0D5F}](https://github.com/user-attachments/assets/31bf8407-c213-402c-bb3e-02f91c8154d3)
 
 
 #### 参数说明：
@@ -62,5 +58,6 @@
 2. 将上面的 JavaScript 代码粘贴到 Worker 的代码编辑器中。
 3. 配置 Worker 以响应您的自定义域或使用 Cloudflare 提供的默认子域。
 4. 配置定时触发器来清理缓存，以确保内存使用不超过限制。
+
 ![{触发事件设置}](https://github.com/user-attachments/assets/094e4ca7-5737-4fc0-957c-bd29dcae3736)
 
