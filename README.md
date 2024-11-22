@@ -6,19 +6,12 @@
 
 ## 特性
 
-- 每个卡片包含头像、简介和外部链接。站点头像是调用第三方服务自动爬取的。
+- 每个卡片包含头像、简介和外部链接。站点头像是调用第三方服务自动爬取的，支持自定义头像链接。
 - 支持自动验证 URL 链接。
 - 限制每个 IP 的请求次数，防止滥用。
 - 支持显示链接和实际跳转链接分离的功能。
 - 轻量级，无需额外依赖，适用于各种网站。
-
-## 性能描述
-
-- **高效的请求处理**：由于部署在 Cloudflare Workers 上，该应用能够利用 Cloudflare 的全球边缘网络，快速响应用户请求，减少延迟。
-- **内存管理**：通过使用 Map 数据结构来存储请求记录，系统能够高效地管理内存，确保在高并发情况下依然保持良好的性能。
-- **速率限制**：内置的请求速率限制机制能够有效防止恶意请求和滥用，确保服务的稳定性和可用性。
-- **自定义头像支持**：用户可以选择使用自定义头像或默认头像，提供灵活性并减少不必要的网络请求。
-- **轻量级设计**：代码结构简洁，依赖最小化，确保快速加载和渲染。
+- **性能优化**：通过使用 Cloudflare Workers 的边缘计算能力，确保快速响应时间和高可用性。系统会自动清理过期的请求记录，保持内存使用在合理范围内。
 
 ## 使用方法
 
@@ -44,13 +37,14 @@
 - `specialty`: 卡片中显示的简介（例如：`一只野生的大学生`）。
 - `link`: 显示在卡片上的链接（例如：`https://zwei.de.eu.org`）。
 - `redirect`: 实际跳转的链接（例如：`https://zwei.de.eu.org/blog`）。如果未提供，则默认跳转到 `link`。
+- `avatar`: （可选）自定义头像的 URL（例如：`https://xxx.com/head.png`）。如果未提供，将使用默认的爬取头像。
 
 ### 2. 生成自定义卡片
 
 通过修改 `iframe` 中的 `src` 参数，您可以动态创建任何自定义的卡片。例如，如果您想要展示自己的网站链接和描述，只需替换为相应的 `name`、`specialty`、`link` 和 `redirect`。
 
 ```html
-<iframe src="https://friendcards.zwei.de.eu.org/?name=YourName&specialty=YourSpecialty&link=YourLink&redirect=YourRedirectLink" 
+<iframe src="https://friendcards.zwei.de.eu.org/?name=YourName&specialty=YourSpecialty&link=YourLink&redirect=YourRedirectLink&avatar=YourAvatarLink" 
         style="border:none; width:100%; height:160px;" 
         scrolling="no"></iframe>
 ```
