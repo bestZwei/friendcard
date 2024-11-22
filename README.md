@@ -36,7 +36,7 @@
 - `name`: 卡片中显示的名称（例如：`Zwei`）。
 - `specialty`: 卡片中显示的简介（例如：`一只野生的大学生`）。
 - `link`: 显示在卡片上的链接（例如：`https://zwei.de.eu.org`）。
-- `redirect`: 实际跳转的链接（例如：`https://zwei.de.eu.org/blog`）。如果未提供，则默认跳转到 `link`。
+- `redirect`: （可选） 实际跳转的链接（例如：`https://zwei.de.eu.org/blog`）。如果未提供，则默认跳转到 `link`。
 - `avatar`: （可选）自定义头像的 URL（例如：`https://xxx.com/head.png`）。如果未提供，将使用默认的爬取头像。
 
 ### 2. 生成自定义卡片
