@@ -28,9 +28,10 @@ async function handleRequest(request) {
     const specialty = sanitizeInput(url.searchParams.get('specialty')) || 'INFO';
     const displayLink = sanitizeInput(url.searchParams.get('link')) || '#';
     const redirectLink = sanitizeInput(url.searchParams.get('redirect')) || displayLink;
+    const avatarLink = sanitizeInput(url.searchParams.get('avatar'));
     const domain = displayLink !== '#' ? new URL(displayLink).hostname : 'zwei.de.eu.org';
 
-    const html = generateHTML(friendName, specialty, displayLink, redirectLink, domain);
+    const html = generateHTML(friendName, specialty, displayLink, redirectLink, avatarLink, domain);
 
     return new Response(html, {
       headers: { 'content-type': 'text/html;charset=UTF-8' },
@@ -89,7 +90,9 @@ function isValidURL(string) {
   }
 }
 
-function generateHTML(name, specialty, displayLink, redirectLink, domain) {
+function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, domain) {
+  const avatarURL = avatarLink || `https://api.faviconkit.com/${domain}/128`;
+
   return `
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Poppins:wght@400;500;700&family=ZCOOL+KuaiLe&display=swap');
@@ -159,7 +162,7 @@ function generateHTML(name, specialty, displayLink, redirectLink, domain) {
     </style>
     <div class="card">
       <div class="avatar">
-        <img src="https://api.faviconkit.com/${domain}/128" alt="${name}'s avatar" onerror="this.onerror=null;this.src='https://via.placeholder.com/80';">
+        <img src="${avatarURL}" alt="${name}'s avatar" onerror="this.onerror=null;this.src='https://via.placeholder.com/80';">
       </div>
       <div class="content">
         <h3>${name}</h3>
