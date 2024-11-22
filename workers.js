@@ -163,7 +163,7 @@ function generateHTML(name, specialty, displayLink, redirectLink, domain) {
       </div>
       <div class="content">
         <h3>${name}</h3>
-        <p>简介：${specialty}</p>
+        <p>✨${specialty}✨</p>
         <a href="${redirectLink}" target="_blank">${displayLink}</a>
       </div>
     </div>
