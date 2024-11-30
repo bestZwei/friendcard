@@ -18,7 +18,7 @@
     </main>
 
     <footer class="footer">
-      <p>Made with ❤️ by <a href="https://github.com/yourusername" target="_blank">Your Name</a></p>
+      <p>Made with ❤️ by <a href="https://zwei.de.eu.org" target="_blank">Zwei</a></p>
     </footer>
 
     <Toast ref="toast" />
@@ -61,7 +61,7 @@ const formData = ref({
     linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0)),
     linear-gradient(135deg, #4f46e5, #3b82f6);
   color: white;
-  padding: 4rem 2rem;
+  padding: 2.5rem 2rem;
   text-align: center;
   position: relative;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -73,9 +73,9 @@ const formData = ref({
 }
 
 .header h1 {
-  font-size: 2.5rem;
+  font-size: 2.25rem;
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   background: linear-gradient(to right, #ffffff, rgba(255,255,255,0.9));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -83,8 +83,9 @@ const formData = ref({
 }
 
 .header p {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   opacity: 0.9;
+  margin: 0;
 }
 
 .theme-toggle {
@@ -142,11 +143,15 @@ const formData = ref({
 
 @media (max-width: 768px) {
   .header {
-    padding: 3rem 1rem;
+    padding: 2rem 1rem;
   }
 
   .header h1 {
-    font-size: 2rem;
+    font-size: 1.75rem;
+  }
+
+  .header p {
+    font-size: 1rem;
   }
 
   .main-content {
