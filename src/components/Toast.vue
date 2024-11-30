@@ -1,26 +1,32 @@
 <template>
   <Teleport to="body">
-    <div v-if="isVisible" class="toast" :class="type">
-      {{ message }}
-    </div>
+    <TransitionGroup name="toast">
+      <div
+        v-for="toast in toasts"
+        :key="toast.id"
+        class="toast"
+        :class="toast.type"
+      >
+        {{ toast.message }}
+      </div>
+    </TransitionGroup>
   </Teleport>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 
-const isVisible = ref(false)
-const message = ref('')
-const type = ref('success')
+const toasts = ref([])
+let toastId = 0
 
-const show = (msg, msgType = 'success') => {
-  message.value = msg
-  type.value = msgType
-  isVisible.value = true
+const show = (message, type = 'success', duration = 3000) => {
+  const id = toastId++
+  const toast = { id, message, type }
+  toasts.value.push(toast)
   
   setTimeout(() => {
-    isVisible.value = false
-  }, 3000)
+    toasts.value = toasts.value.filter(t => t.id !== id)
+  }, duration)
 }
 
 defineExpose({ show })
@@ -32,30 +38,38 @@ defineExpose({ show })
   bottom: 2rem;
   left: 50%;
   transform: translateX(-50%);
-  padding: 1rem 2rem;
+  padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   color: white;
   font-weight: 500;
+  box-shadow: var(--card-shadow);
   z-index: 1000;
-  animation: slideUp 0.3s ease;
 }
 
-.success {
-  background-color: #10b981;
+.toast.success {
+  background: var(--success);
 }
 
-.error {
-  background-color: #dc2626;
+.toast.error {
+  background: var(--error);
 }
 
-@keyframes slideUp {
-  from {
-    transform: translate(-50%, 100%);
-    opacity: 0;
-  }
-  to {
-    transform: translate(-50%, 0);
-    opacity: 1;
-  }
+.toast.warning {
+  background: var(--warning);
+}
+
+.toast-enter-active,
+.toast-leave-active {
+  transition: all var(--transition-normal);
+}
+
+.toast-enter-from {
+  opacity: 0;
+  transform: translate(-50%, 100%);
+}
+
+.toast-leave-to {
+  opacity: 0;
+  transform: translate(-50%, -100%);
 }
 </style> 
