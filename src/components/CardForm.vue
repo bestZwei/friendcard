@@ -129,15 +129,14 @@
       <div class="form-group">
         <label for="font">字体</label>
         <select id="font" v-model="localData.font">
-          <optgroup label="中文字体">
-            <option value="ZCOOL KuaiLe">ZCOOL KuaiLe</option>
-            <option value="Noto Sans SC">Noto Sans SC</option>
-            <option value="Ma Shan Zheng">马善政毛笔字体</option>
-          </optgroup>
-          <optgroup label="英文字体">
-            <option value="Roboto">Roboto</option>
-            <option value="Poppins">Poppins</option>
-            <option value="Playfair Display">Playfair Display</option>
+          <optgroup v-for="(fonts, category) in fontOptions" 
+                    :key="category" 
+                    :label="category">
+            <option v-for="font in fonts"
+                    :key="font.value"
+                    :value="font.value">
+              {{ font.label }}
+            </option>
           </optgroup>
         </select>
       </div>
@@ -228,8 +227,15 @@ const bgPresets = [
   { name: '默认渐变', value: 'linear-gradient(135deg, #e0e7ff, #f0f4f8)' },
   { name: '暖色渐变', value: 'linear-gradient(135deg, #fef3c7, #ffe4e6)' },
   { name: '冷色渐变', value: 'linear-gradient(135deg, #dbeafe, #e0e7ff)' },
+  { name: '薄荷渐变', value: 'linear-gradient(135deg, #d1fae5, #dbeafe)' },
+  { name: '紫色渐变', value: 'linear-gradient(135deg, #ede9fe, #fae8ff)' },
+  { name: '日落渐变', value: 'linear-gradient(135deg, #fef3c7, #fee2e2)' },
   { name: '纯白', value: '#ffffff' },
+  { name: '象牙白', value: '#fffff0' },
   { name: '浅灰', value: '#f3f4f6' },
+  { name: '浅蓝', value: '#f0f9ff' },
+  { name: '浅粉', value: '#fdf2f8' },
+  { name: '浅紫', value: '#f5f3ff' },
 ]
 
 const textPresets = [
@@ -242,9 +248,78 @@ const textPresets = [
 const linkPresets = [
   { name: '默认蓝', value: '#2563eb' },
   { name: '深蓝', value: '#1d4ed8' },
-  { name: '绿色', value: '#059669' },
+  { name: '靛青', value: '#3730a3' },
   { name: '紫色', value: '#7c3aed' },
+  { name: '玫红', value: '#db2777' },
+  { name: '红色', value: '#dc2626' },
+  { name: '橙色', value: '#ea580c' },
+  { name: '琥珀', value: '#d97706' },
+  { name: '绿色', value: '#059669' },
+  { name: '青色', value: '#0891b2' },
 ]
+
+const fontOptions = {
+  '中文字体': [
+    { label: 'ZCOOL KuaiLe', value: 'ZCOOL KuaiLe' },
+    { label: 'Noto Sans SC', value: 'Noto Sans SC' },
+    { label: '思源黑体', value: 'Source Han Sans CN' },
+    { label: '思源宋体', value: 'Source Han Serif SC' },
+    { label: '阿里巴巴普惠体', value: 'Alibaba PuHuiTi' },
+    { label: '站酷高端黑', value: 'ZCOOL XiaoWei' },
+    { label: '站酷快乐体', value: 'ZCOOL Happy' },
+    { label: '文泉驿微米黑', value: 'WenQuanYi Micro Hei' },
+    { label: '方正黑体', value: 'FZHei-B01' },
+    { label: '方正书宋', value: 'FZShuSong-Z01' },
+    { label: '楷体', value: 'KaiTi' },
+    { label: '仿宋', value: 'FangSong' },
+    { label: '黑体', value: 'SimHei' },
+    { label: '宋体', value: 'SimSun' },
+    { label: '华文黑体', value: 'STHeiti' },
+  ],
+  '英文字体': [
+    { label: 'Roboto', value: 'Roboto' },
+    { label: 'Open Sans', value: 'Open Sans' },
+    { label: 'Lato', value: 'Lato' },
+    { label: 'Poppins', value: 'Poppins' },
+    { label: 'Montserrat', value: 'Montserrat' },
+    { label: 'Inter', value: 'Inter' },
+    { label: 'Playfair Display', value: 'Playfair Display' },
+    { label: 'Merriweather', value: 'Merriweather' },
+    { label: 'Source Code Pro', value: 'Source Code Pro' },
+    { label: 'Fira Code', value: 'Fira Code' },
+    { label: 'JetBrains Mono', value: 'JetBrains Mono' },
+    { label: 'Arial', value: 'Arial' },
+    { label: 'Times New Roman', value: 'Times New Roman' },
+    { label: 'Georgia', value: 'Georgia' },
+    { label: 'Verdana', value: 'Verdana' },
+  ],
+  '日文字体': [
+    { label: 'Noto Sans JP', value: 'Noto Sans JP' },
+    { label: '源ノ角ゴシック', value: 'Source Han Sans JP' },
+    { label: '源ノ明朝', value: 'Source Han Serif JP' },
+    { label: 'メイリオ', value: 'Meiryo' },
+    { label: 'ヒラギノ角ゴ', value: 'Hiragino Kaku Gothic ProN' },
+  ],
+  '韩文字体': [
+    { label: 'Noto Sans KR', value: 'Noto Sans KR' },
+    { label: '본고딕', value: 'Source Han Sans KR' },
+    { label: '나눔고딕', value: 'Nanum Gothic' },
+    { label: '나눔명조', value: 'Nanum Myeongjo' },
+    { label: '맑은 고딕', value: 'Malgun Gothic' },
+  ],
+  '装饰字体': [
+    { label: 'Dancing Script', value: 'Dancing Script' },
+    { label: 'Pacifico', value: 'Pacifico' },
+    { label: 'Lobster', value: 'Lobster' },
+    { label: 'Great Vibes', value: 'Great Vibes' },
+    { label: 'Sacramento', value: 'Sacramento' },
+    { label: 'Satisfy', value: 'Satisfy' },
+    { label: 'Cookie', value: 'Cookie' },
+    { label: 'Courgette', value: 'Courgette' },
+    { label: 'Kaushan Script', value: 'Kaushan Script' },
+    { label: 'Yellowtail', value: 'Yellowtail' },
+  ],
+}
 </script>
 
 <style scoped>
@@ -354,4 +429,24 @@ optgroup {
   --input-border: #374151;
   --input-text: #e5e7eb;
 }
+
+/* 添加字体预览效果 */
+select option {
+  padding: 8px;
+  font-size: 1rem;
+}
+
+select option:hover {
+  background-color: #f3f4f6;
+}
+
+/* 优化字体分组样式 */
+select optgroup {
+  font-weight: 600;
+  color: #4b5563;
+  background-color: #f8fafc;
+}
+
+/* 添加字体预加载 */
+@import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC&family=Roboto&family=Poppins&family=Playfair+Display&family=Inter&family=Noto+Sans+JP&family=Noto+Sans+KR&family=Dancing+Script&display=swap');
 </style> 

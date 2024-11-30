@@ -155,15 +155,17 @@ const copyToClipboard = async (text) => {
 .code-section {
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: #f1f5f9;
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
   border-radius: 0.75rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .code-container {
-  background: #e2e8f0;
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
   padding: 1rem;
   border-radius: 0.5rem;
   overflow-x: auto;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 code {
@@ -175,17 +177,26 @@ code {
 }
 
 .copy-btn {
-  padding: 0.5rem 1rem;
-  background: #2563eb;
+  padding: 0.5rem 1.5rem;
+  background: linear-gradient(135deg, #4f46e5, #3b82f6);
   color: white;
   border: none;
-  border-radius: 0.25rem;
+  border-radius: 0.5rem;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
 }
 
 .copy-btn:hover {
-  background: #1d4ed8;
+  background: linear-gradient(135deg, #4338ca, #2563eb);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.copy-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .toast {
@@ -193,12 +204,13 @@ code {
   bottom: 2rem;
   left: 50%;
   transform: translateX(-50%) translateY(100%);
-  background: #1f2937;
+  background: linear-gradient(135deg, #4f46e5, #3b82f6);
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   transition: transform 0.3s ease;
   z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .toast.show {

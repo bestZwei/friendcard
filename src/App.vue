@@ -56,11 +56,15 @@ const formData = ref({
 }
 
 .header {
-  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  background: linear-gradient(135deg, #4f46e5, #3b82f6);
+  background-image: 
+    linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0)),
+    linear-gradient(135deg, #4f46e5, #3b82f6);
   color: white;
   padding: 4rem 2rem;
   text-align: center;
   position: relative;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .header-content {
@@ -72,9 +76,10 @@ const formData = ref({
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  background: linear-gradient(to right, #ffffff, #e0e7ff);
+  background: linear-gradient(to right, #ffffff, rgba(255,255,255,0.9));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .header p {
@@ -147,5 +152,46 @@ const formData = ref({
   .main-content {
     padding: 1rem;
   }
+}
+
+.copy-btn, 
+.btn-primary,
+button[type="submit"] {
+  background: linear-gradient(135deg, #4f46e5, #3b82f6);
+  border: none;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.copy-btn:hover, 
+.btn-primary:hover,
+button[type="submit"]:hover {
+  background: linear-gradient(135deg, #4338ca, #2563eb);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.copy-btn:active, 
+.btn-primary:active,
+button[type="submit"]:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.toast {
+  background: linear-gradient(135deg, #4f46e5, #3b82f6);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 </style> 
