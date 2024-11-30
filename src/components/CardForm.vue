@@ -127,7 +127,7 @@
       </div>
 
       <div class="form-group">
-        <label for="font">字体</label>
+        <label for="font">简介字体</label>
         <select id="font" v-model="localData.font">
           <optgroup v-for="(fonts, category) in fontOptions" 
                     :key="category" 
@@ -260,60 +260,60 @@ const linkPresets = [
 
 const fontOptions = {
   '中文字体': [
+    { label: '站酷快乐体 (默认)', value: 'ZCOOL KuaiLe' },
     { label: '思源黑体', value: 'Noto Sans SC' },
     { label: '思源宋体', value: 'Noto Serif SC' },
     { label: '霞鹜文楷', value: 'LXGW WenKai' },
-    { label: '阿里巴巴普惠体', value: 'Alibaba PuHuiTi' },
-    { label: '得意黑', value: 'SmileySans-Oblique' },
-    { label: '站酷快乐体', value: 'ZCOOL KuaiLe' },
+    { label: '站酷文艺体', value: 'ZCOOL XiaoWei' },
     { label: '站酷高端黑', value: 'ZCOOL QingKe HuangYou' },
-    { label: '仓耳渔阳体', value: 'MaShanZheng' },
+    { label: '马善政硬笔行书', value: 'Ma Shan Zheng' },
+    { label: '钟齐志莽行书', value: 'Zhi Mang Xing' }
   ],
   '英文字体': [
     { label: 'Roboto', value: 'Roboto' },
+    { label: 'Poppins', value: 'Poppins' },
     { label: 'Open Sans', value: 'Open Sans' },
     { label: 'Inter', value: 'Inter' },
-    { label: 'Lato', value: 'Lato' },
     { label: 'Montserrat', value: 'Montserrat' },
+    { label: 'Lato', value: 'Lato' },
     { label: 'Source Sans Pro', value: 'Source Sans Pro' },
-    { label: 'Poppins', value: 'Poppins' },
-    { label: 'Ubuntu', value: 'Ubuntu' },
+    { label: 'Ubuntu', value: 'Ubuntu' }
   ],
   '德语字体': [
     { label: 'Fira Sans', value: 'Fira Sans' },
     { label: 'IBM Plex Sans', value: 'IBM Plex Sans' },
-    { label: 'Nunito Sans', value: 'Nunito Sans' },
+    { label: 'Nunito Sans', value: 'Nunito Sans' }
   ],
   '法语字体': [
     { label: 'Josefin Sans', value: 'Josefin Sans' },
     { label: 'Raleway', value: 'Raleway' },
-    { label: 'Work Sans', value: 'Work Sans' },
+    { label: 'Work Sans', value: 'Work Sans' }
   ],
   '西班牙语字体': [
     { label: 'Manrope', value: 'Manrope' },
     { label: 'DM Sans', value: 'DM Sans' },
-    { label: 'Space Grotesk', value: 'Space Grotesk' },
+    { label: 'Space Grotesk', value: 'Space Grotesk' }
   ],
   '阿拉伯语字体': [
     { label: 'Noto Sans Arabic', value: 'Noto Sans Arabic' },
     { label: 'Noto Kufi Arabic', value: 'Noto Kufi Arabic' },
-    { label: 'Amiri', value: 'Amiri' },
+    { label: 'Amiri', value: 'Amiri' }
   ],
   '韩文字体': [
     { label: 'Noto Sans KR', value: 'Noto Sans KR' },
-    { label: '나눔고딕', value: 'Nanum Gothic' },
-    { label: '나눔명조', value: 'Nanum Myeongjo' },
+    { label: 'Nanum Gothic', value: 'Nanum Gothic' },
+    { label: 'Nanum Myeongjo', value: 'Nanum Myeongjo' }
   ],
   '越南语字体': [
     { label: 'Noto Sans Vietnamese', value: 'Noto Sans Vietnamese' },
     { label: 'Be Vietnam Pro', value: 'Be Vietnam Pro' },
-    { label: 'Josefin Sans', value: 'Josefin Sans' },
+    { label: 'Josefin Sans', value: 'Josefin Sans' }
   ],
   '俄语字体': [
     { label: 'Noto Sans', value: 'Noto Sans' },
     { label: 'PT Sans', value: 'PT Sans' },
-    { label: 'Roboto', value: 'Roboto' },
-  ],
+    { label: 'Roboto', value: 'Roboto' }
+  ]
 }
 </script>
 

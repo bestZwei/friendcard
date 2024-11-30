@@ -107,7 +107,7 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
 
   return `
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Poppins:wght@400;500;700&family=ZCOOL+KuaiLe&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=ZCOOL+XiaoWei&family=ZCOOL+QingKe+HuangYou&family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@400;700&family=LXGW+WenKai&family=Roboto:wght@400;500;700&family=Poppins:wght@400;500;700&family=Open+Sans:wght@400;600&family=Inter:wght@400;500;600&family=Montserrat:wght@400;500;600&family=Lato:wght@400;700&family=Source+Sans+Pro:wght@400;600&family=Ubuntu:wght@400;500&family=Fira+Sans:wght@400;500&family=IBM+Plex+Sans:wght@400;500&family=Nunito+Sans:wght@400;600&family=Josefin+Sans:wght@400;500&family=Raleway:wght@400;500&family=Work+Sans:wght@400;500&family=Manrope:wght@400;500&family=DM+Sans:wght@400;500&family=Space+Grotesk:wght@400;500&family=Noto+Sans+Arabic:wght@400;500&family=Noto+Kufi+Arabic:wght@400;500&family=Amiri:wght@400;700&family=Noto+Sans+KR:wght@400;500&family=Nanum+Gothic:wght@400;700&family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+Vietnamese:wght@400;500&family=Be+Vietnam+Pro:wght@400;500&family=PT+Sans:wght@400;700&display=swap');
       
       .card {
         display: flex;
