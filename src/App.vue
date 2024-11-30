@@ -9,12 +9,14 @@
       <div class="content-wrapper">
         <CardForm v-model="formData" />
         
+        <CodeGenerator :form-data="formData" />
+        
         <div class="preview-section">
           <h2>预览效果</h2>
-          <CardPreview :form-data="formData" />
+          <div class="preview-container">
+            <CardPreview :form-data="formData" />
+          </div>
         </div>
-
-        <CodeGenerator :form-data="formData" />
       </div>
     </main>
 
@@ -70,7 +72,17 @@ header h1 {
   
   .preview-section {
     grid-column: 1 / -1;
+    margin-top: 2rem;
   }
+}
+
+.preview-section {
+  text-align: center;
+}
+
+.preview-container {
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 footer {
