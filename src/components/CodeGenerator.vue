@@ -2,15 +2,6 @@
   <div class="code-generator">
     <div class="section-header">
       <h2>生成代码</h2>
-      <div class="theme-switch">
-        <button 
-          @click="toggleTheme" 
-          class="theme-btn"
-          :title="isDark ? '切换到浅色主题' : '切换到深色主题'"
-        >
-          {{ isDark ? '🌞' : '🌙' }}
-        </button>
-      </div>
     </div>
     
     <!-- 预览区域 -->
@@ -65,10 +56,6 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { useDark, useToggle } from '@vueuse/core'
-
-const isDark = useDark()
-const toggleTheme = useToggle(isDark)
 
 // Toast 状态
 const showToast = ref(false)
@@ -138,7 +125,7 @@ const copyToClipboard = async (text) => {
 
 <style scoped>
 .code-generator {
-  background: var(--card-bg);
+  background: white;
   padding: 2rem;
   border-radius: 1rem;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
@@ -154,7 +141,7 @@ const copyToClipboard = async (text) => {
 .preview-section {
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: var(--preview-bg);
+  background: #f8fafc;
   border-radius: 0.75rem;
 }
 
@@ -168,12 +155,12 @@ const copyToClipboard = async (text) => {
 .code-section {
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: var(--section-bg);
+  background: #f1f5f9;
   border-radius: 0.75rem;
 }
 
 .code-container {
-  background: var(--code-bg);
+  background: #e2e8f0;
   padding: 1rem;
   border-radius: 0.5rem;
   overflow-x: auto;
@@ -184,12 +171,12 @@ code {
   font-size: 0.9rem;
   white-space: pre-wrap;
   word-break: break-all;
-  color: var(--code-color);
+  color: #0f172a;
 }
 
 .copy-btn {
   padding: 0.5rem 1rem;
-  background: var(--primary-color);
+  background: #2563eb;
   color: white;
   border: none;
   border-radius: 0.25rem;
@@ -198,15 +185,7 @@ code {
 }
 
 .copy-btn:hover {
-  background: var(--primary-dark);
-}
-
-.theme-btn {
-  padding: 0.5rem;
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: 1.2rem;
+  background: #1d4ed8;
 }
 
 .toast {
@@ -214,7 +193,7 @@ code {
   bottom: 2rem;
   left: 50%;
   transform: translateX(-50%) translateY(100%);
-  background: var(--toast-bg);
+  background: #1f2937;
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
@@ -226,30 +205,8 @@ code {
   transform: translateX(-50%) translateY(0);
 }
 
-/* 浅色主题 */
-:root {
-  --primary-color: #2563eb;
-  --primary-dark: #1d4ed8;
-  --card-bg: white;
-  --preview-bg: #f8fafc;
-  --section-bg: #f1f5f9;
-  --code-bg: #e2e8f0;
-  --code-color: #0f172a;
-  --toast-bg: #1f2937;
-}
-
-/* 深色主题 */
-:root.dark {
-  --card-bg: #1f2937;
-  --preview-bg: #1a1f2e;
-  --section-bg: #111827;
-  --code-bg: #0f172a;
-  --code-color: #e2e8f0;
-  --toast-bg: #4b5563;
-}
-
 h2, h3 {
-  color: var(--heading-color, inherit);
+  color: #1f2937;
   margin: 0;
 }
 </style> 
