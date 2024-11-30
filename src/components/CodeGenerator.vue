@@ -13,6 +13,19 @@
       </div>
     </div>
     
+    <!-- 预览区域 -->
+    <div class="preview-section">
+      <h3>预览效果</h3>
+      <div class="preview-container">
+        <iframe 
+          :src="generatedUrl"
+          style="border: none; width: 100%; height: 160px; overflow: hidden;"
+          loading="lazy"
+          title="Friend Card Preview"
+        ></iframe>
+      </div>
+    </div>
+    
     <div class="code-section">
       <div class="section-header">
         <h3>URL 链接</h3>
@@ -138,8 +151,25 @@ const copyToClipboard = async (text) => {
   margin-bottom: 1rem;
 }
 
+.preview-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--preview-bg);
+  border-radius: 0.75rem;
+}
+
+.preview-container {
+  background: white;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
 .code-section {
   margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--section-bg);
+  border-radius: 0.75rem;
 }
 
 .code-container {
@@ -150,7 +180,8 @@ const copyToClipboard = async (text) => {
 }
 
 code {
-  font-family: monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9rem;
   white-space: pre-wrap;
   word-break: break-all;
   color: var(--code-color);
@@ -195,19 +226,30 @@ code {
   transform: translateX(-50%) translateY(0);
 }
 
+/* 浅色主题 */
 :root {
   --primary-color: #2563eb;
   --primary-dark: #1d4ed8;
   --card-bg: white;
-  --code-bg: #f3f4f6;
-  --code-color: #1f2937;
+  --preview-bg: #f8fafc;
+  --section-bg: #f1f5f9;
+  --code-bg: #e2e8f0;
+  --code-color: #0f172a;
   --toast-bg: #1f2937;
 }
 
+/* 深色主题 */
 :root.dark {
   --card-bg: #1f2937;
-  --code-bg: #111827;
-  --code-color: #e5e7eb;
+  --preview-bg: #1a1f2e;
+  --section-bg: #111827;
+  --code-bg: #0f172a;
+  --code-color: #e2e8f0;
   --toast-bg: #4b5563;
+}
+
+h2, h3 {
+  color: var(--heading-color, inherit);
+  margin: 0;
 }
 </style> 
