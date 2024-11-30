@@ -1,7 +1,8 @@
 {
   "name": "friend-card-generator",
-  "version": "1.0.0",
   "private": true,
+  "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
