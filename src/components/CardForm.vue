@@ -68,6 +68,16 @@
       
       <div class="form-group">
         <label for="bgcolor">背景颜色</label>
+        <div class="color-presets">
+          <button
+            v-for="preset in bgPresets"
+            :key="preset.value"
+            class="color-preset"
+            :style="{ background: preset.value }"
+            @click="localData.bgcolor = preset.value"
+            :title="preset.name"
+          ></button>
+        </div>
         <input
           id="bgcolor"
           v-model="localData.bgcolor"
@@ -78,6 +88,16 @@
 
       <div class="form-group">
         <label for="textcolor">文字颜色</label>
+        <div class="color-presets">
+          <button
+            v-for="preset in textPresets"
+            :key="preset.value"
+            class="color-preset"
+            :style="{ background: preset.value }"
+            @click="localData.textcolor = preset.value"
+            :title="preset.name"
+          ></button>
+        </div>
         <input
           id="textcolor"
           v-model="localData.textcolor"
@@ -88,6 +108,16 @@
 
       <div class="form-group">
         <label for="linkcolor">链接颜色</label>
+        <div class="color-presets">
+          <button
+            v-for="preset in linkPresets"
+            :key="preset.value"
+            class="color-preset"
+            :style="{ background: preset.value }"
+            @click="localData.linkcolor = preset.value"
+            :title="preset.name"
+          ></button>
+        </div>
         <input
           id="linkcolor"
           v-model="localData.linkcolor"
@@ -99,9 +129,16 @@
       <div class="form-group">
         <label for="font">字体</label>
         <select id="font" v-model="localData.font">
-          <option value="ZCOOL KuaiLe">ZCOOL KuaiLe</option>
-          <option value="Roboto">Roboto</option>
-          <option value="Poppins">Poppins</option>
+          <optgroup label="中文字体">
+            <option value="ZCOOL KuaiLe">ZCOOL KuaiLe</option>
+            <option value="Noto Sans SC">Noto Sans SC</option>
+            <option value="Ma Shan Zheng">马善政毛笔字体</option>
+          </optgroup>
+          <optgroup label="英文字体">
+            <option value="Roboto">Roboto</option>
+            <option value="Poppins">Poppins</option>
+            <option value="Playfair Display">Playfair Display</option>
+          </optgroup>
         </select>
       </div>
     </form>
@@ -186,6 +223,28 @@ onMounted(() => {
     Object.assign(localData.value, parsed)
   }
 })
+
+const bgPresets = [
+  { name: '默认渐变', value: 'linear-gradient(135deg, #e0e7ff, #f0f4f8)' },
+  { name: '暖色渐变', value: 'linear-gradient(135deg, #fef3c7, #ffe4e6)' },
+  { name: '冷色渐变', value: 'linear-gradient(135deg, #dbeafe, #e0e7ff)' },
+  { name: '纯白', value: '#ffffff' },
+  { name: '浅灰', value: '#f3f4f6' },
+]
+
+const textPresets = [
+  { name: '深灰', value: '#1f2937' },
+  { name: '黑色', value: '#000000' },
+  { name: '深蓝', value: '#1e3a8a' },
+  { name: '深棕', value: '#3f2f1f' },
+]
+
+const linkPresets = [
+  { name: '默认蓝', value: '#2563eb' },
+  { name: '深蓝', value: '#1d4ed8' },
+  { name: '绿色', value: '#059669' },
+  { name: '紫色', value: '#7c3aed' },
+]
 </script>
 
 <style scoped>
@@ -264,5 +323,35 @@ select:focus {
 input[type="color"] {
   padding: 0.25rem;
   height: 40px;
+}
+
+.color-presets {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.color-preset {
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.color-preset:hover {
+  transform: scale(1.1);
+}
+
+optgroup {
+  font-weight: 600;
+}
+
+.dark {
+  --card-bg: #1f2937;
+  --input-bg: #111827;
+  --input-border: #374151;
+  --input-text: #e5e7eb;
 }
 </style> 

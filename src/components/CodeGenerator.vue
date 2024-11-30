@@ -1,32 +1,73 @@
 <template>
   <div class="code-generator">
-    <h2>生成代码</h2>
+    <div class="section-header">
+      <h2>生成代码</h2>
+      <div class="theme-switch">
+        <button 
+          @click="toggleTheme" 
+          class="theme-btn"
+          :title="isDark ? '切换到浅色主题' : '切换到深色主题'"
+        >
+          {{ isDark ? '🌞' : '🌙' }}
+        </button>
+      </div>
+    </div>
     
     <div class="code-section">
-      <h3>URL 链接</h3>
+      <div class="section-header">
+        <h3>URL 链接</h3>
+        <button @click="copyToClipboard(generatedUrl)" class="copy-btn">
+          复制链接
+        </button>
+      </div>
       <div class="code-container">
         <code>{{ generatedUrl }}</code>
-        <button @click="copyToClipboard(generatedUrl)" class="copy-btn">
-          复制
-        </button>
       </div>
     </div>
 
     <div class="code-section">
-      <h3>iframe 嵌入代码</h3>
+      <div class="section-header">
+        <h3>iframe 嵌入代码</h3>
+        <button @click="copyToClipboard(iframeCode)" class="copy-btn">
+          复制代码
+        </button>
+      </div>
       <div class="code-container">
         <code>{{ iframeCode }}</code>
-        <button @click="copyToClipboard(iframeCode)" class="copy-btn">
-          复制
-        </button>
       </div>
     </div>
   </div>
+
+  <!-- Toast 提示 -->
+  <Teleport to="body">
+    <div 
+      v-if="showToast" 
+      class="toast"
+      :class="{ 'show': showToast }"
+    >
+      {{ toastMessage }}
+    </div>
+  </Teleport>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import Clipboard from 'clipboard'
+import { computed, ref } from 'vue'
+import { useDark, useToggle } from '@vueuse/core'
+
+const isDark = useDark()
+const toggleTheme = useToggle(isDark)
+
+// Toast 状态
+const showToast = ref(false)
+const toastMessage = ref('')
+
+const showToastMessage = (message) => {
+  toastMessage.value = message
+  showToast.value = true
+  setTimeout(() => {
+    showToast.value = false
+  }, 2000)
+}
 
 const props = defineProps({
   formData: {
@@ -72,39 +113,37 @@ const iframeCode = computed(() => {
 </div>`
 })
 
-const copyToClipboard = (text) => {
-  const el = document.createElement('textarea')
-  el.value = text
-  document.body.appendChild(el)
-  el.select()
-  document.execCommand('copy')
-  document.body.removeChild(el)
-  
-  // 可以添加一个提示toast
-  alert('已复制到剪贴板')
+const copyToClipboard = async (text) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    showToastMessage('复制成功！')
+  } catch (err) {
+    showToastMessage('复制失败，请手动复制')
+  }
 }
 </script>
 
 <style scoped>
 .code-generator {
-  background: white;
+  background: var(--card-bg);
   padding: 2rem;
   border-radius: 1rem;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
 .code-section {
   margin-bottom: 2rem;
 }
 
-.code-section h3 {
-  margin-bottom: 1rem;
-  color: #374151;
-}
-
 .code-container {
-  position: relative;
-  background: #f3f4f6;
+  background: var(--code-bg);
   padding: 1rem;
   border-radius: 0.5rem;
   overflow-x: auto;
@@ -114,14 +153,12 @@ code {
   font-family: monospace;
   white-space: pre-wrap;
   word-break: break-all;
+  color: var(--code-color);
 }
 
 .copy-btn {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
   padding: 0.5rem 1rem;
-  background: #2563eb;
+  background: var(--primary-color);
   color: white;
   border: none;
   border-radius: 0.25rem;
@@ -130,6 +167,47 @@ code {
 }
 
 .copy-btn:hover {
-  background: #1d4ed8;
+  background: var(--primary-dark);
+}
+
+.theme-btn {
+  padding: 0.5rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100%);
+  background: var(--toast-bg);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+:root {
+  --primary-color: #2563eb;
+  --primary-dark: #1d4ed8;
+  --card-bg: white;
+  --code-bg: #f3f4f6;
+  --code-color: #1f2937;
+  --toast-bg: #1f2937;
+}
+
+:root.dark {
+  --card-bg: #1f2937;
+  --code-bg: #111827;
+  --code-color: #e5e7eb;
+  --toast-bg: #4b5563;
 }
 </style> 
