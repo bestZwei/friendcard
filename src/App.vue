@@ -37,7 +37,11 @@ const formData = ref({
   specialty: '',
   link: '',
   redirect: '',
-  avatar: ''
+  avatar: '',
+  bgcolor: 'linear-gradient(135deg, #e0e7ff, #f0f4f8)',
+  textcolor: '#1f2937',
+  linkcolor: '#2563eb',
+  font: 'ZCOOL KuaiLe'
 })
 </script>
 

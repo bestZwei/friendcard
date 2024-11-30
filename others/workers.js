@@ -31,7 +31,18 @@ async function handleRequest(request) {
     const avatarLink = sanitizeInput(url.searchParams.get('avatar'));
     const domain = displayLink !== '#' ? new URL(displayLink).hostname : 'zwei.de.eu.org';
 
-    const html = generateHTML(friendName, specialty, displayLink, redirectLink, avatarLink, domain);
+    // 新增自定义样式参数
+    const bgcolor = sanitizeInput(url.searchParams.get('bgcolor')) || 'linear-gradient(135deg, #e0e7ff, #f0f4f8)';
+    const textcolor = sanitizeInput(url.searchParams.get('textcolor')) || '#1f2937';
+    const linkcolor = sanitizeInput(url.searchParams.get('linkcolor')) || '#2563eb';
+    const font = sanitizeInput(url.searchParams.get('font')) || 'ZCOOL KuaiLe';
+
+    const html = generateHTML(friendName, specialty, displayLink, redirectLink, avatarLink, domain, {
+      bgcolor,
+      textcolor,
+      linkcolor,
+      font
+    });
 
     return new Response(html, {
       headers: { 'content-type': 'text/html;charset=UTF-8' },
@@ -90,8 +101,9 @@ function isValidURL(string) {
   }
 }
 
-function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, domain) {
+function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, domain, styles) {
   const avatarURL = avatarLink || `https://api.faviconkit.com/${domain}/128`;
+  const { bgcolor, textcolor, linkcolor, font } = styles;
 
   return `
     <style>
@@ -103,7 +115,7 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
         border: 2px solid #e2e8f0;
         border-radius: 20px;
         padding: 20px;
-        background: linear-gradient(135deg, #e0e7ff, #f0f4f8);
+        background: ${bgcolor};
         box-shadow: 0 8px 16px rgba(0,0,0,0.1);
         transition: transform 0.3s, box-shadow 0.3s;
         max-width: 600px;
@@ -137,19 +149,19 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
       .content h3 {
         margin: 0;
         font-size: 1.6em;
-        color: #1f2937;
+        color: ${textcolor};
       }
       
       .content p {
         margin: 10px 0;
-        color: #4b5563;
+        color: ${textcolor};
         font-size: 1em;
         line-height: 1.5;
-        font-family: 'ZCOOL KuaiLe', sans-serif;
+        font-family: '${font}', sans-serif;
       }
       
       .content a {
-        color: #2563eb;
+        color: ${linkcolor};
         text-decoration: none;
         font-weight: 500;
         transition: color 0.3s;
@@ -157,7 +169,7 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
       }
       
       .content a:hover {
-        color: #1d4ed8;
+        color: ${linkcolor}dd;
       }
     </style>
     <div class="card">
