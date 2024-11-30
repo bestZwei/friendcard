@@ -18,7 +18,12 @@
     </main>
 
     <footer class="footer">
-      <p>Made with ❤️ by <a href="https://zwei.de.eu.org" target="_blank">Zwei</a></p>
+      <p>
+        Made with ❤️ by <a href="https://zwei.de.eu.org" target="_blank">Zwei</a> | 
+        <a href="https://github.com/bestZwei/friendcard" target="_blank">
+          <span class="github-link">Code</span>
+        </a>
+      </p>
     </footer>
 
     <Toast ref="toast" />
@@ -122,23 +127,53 @@ const formData = ref({
 .footer {
   text-align: center;
   padding: 2rem;
-  background: var(--neutral-100);
-  color: var(--neutral-600);
+  background: linear-gradient(135deg, #f8faff, #eef2ff);
+  color: #4b5563;
+  border-top: 1px solid rgba(99, 102, 241, 0.1);
+  margin-top: 2rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.footer p {
+  margin: 0;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.footer a {
+  color: #4f46e5;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  background: linear-gradient(to right, #4f46e5, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+}
+
+.footer a:hover {
+  background: linear-gradient(to right, #4338ca, #2563eb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.github-link:before {
+  content: "⭐";
+  font-size: 1.1em;
+  background: none;
+  -webkit-text-fill-color: currentColor;
 }
 
 .dark .footer {
   background: var(--neutral-800);
   color: var(--neutral-400);
-}
-
-.footer a {
-  color: var(--primary-600);
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.footer a:hover {
-  text-decoration: underline;
 }
 
 @media (max-width: 768px) {
