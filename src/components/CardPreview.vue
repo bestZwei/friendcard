@@ -29,6 +29,19 @@ const previewUrl = computed(() => {
   if (props.formData.redirect) params.set('redirect', props.formData.redirect)
   if (props.formData.avatar) params.set('avatar', props.formData.avatar)
   
+  if (props.formData.bgcolor !== 'linear-gradient(135deg, #e0e7ff, #f0f4f8)') {
+    params.set('bgcolor', props.formData.bgcolor)
+  }
+  if (props.formData.textcolor !== '#1f2937') {
+    params.set('textcolor', props.formData.textcolor)
+  }
+  if (props.formData.linkcolor !== '#2563eb') {
+    params.set('linkcolor', props.formData.linkcolor)
+  }
+  if (props.formData.font !== 'ZCOOL KuaiLe') {
+    params.set('font', props.formData.font)
+  }
+  
   return `${baseUrl}?${params.toString()}`
 })
 </script>
