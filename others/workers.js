@@ -111,7 +111,7 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
       
       .card {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         border: 2px solid #e2e8f0;
         border-radius: 20px;
         padding: 20px;
@@ -121,6 +121,8 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
         max-width: 600px;
         width: 100%;
         box-sizing: border-box;
+        min-height: 120px;
+        height: auto;
       }
       
       .card:hover {
@@ -129,8 +131,8 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
       }
       
       .avatar {
-        flex: 1;
-        max-width: 80px;
+        flex: 0 0 80px;
+        margin-right: 20px;
       }
       
       .avatar img {
@@ -141,15 +143,15 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
       }
       
       .content {
-        flex: 2;
-        margin-left: 20px;
-        text-align: left;
+        flex: 1;
+        min-width: 0;
       }
       
       .content h3 {
         margin: 0;
         font-size: 1.6em;
         color: ${textcolor};
+        word-wrap: break-word;
       }
       
       .content p {
@@ -158,6 +160,8 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
         font-size: 1em;
         line-height: 1.5;
         font-family: '${font}', sans-serif;
+        word-wrap: break-word;
+        white-space: pre-wrap;
       }
       
       .content a {
@@ -166,10 +170,35 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
         font-weight: 500;
         transition: color 0.3s;
         word-break: break-all;
+        display: inline-block;
+        max-width: 100%;
       }
       
       .content a:hover {
         color: ${linkcolor}dd;
+      }
+
+      @media (max-width: 480px) {
+        .card {
+          padding: 15px;
+        }
+        
+        .avatar {
+          flex: 0 0 60px;
+        }
+        
+        .avatar img {
+          width: 60px;
+          height: 60px;
+        }
+        
+        .content h3 {
+          font-size: 1.4em;
+        }
+        
+        .content p {
+          font-size: 0.95em;
+        }
       }
     </style>
     <div class="card">
@@ -182,5 +211,19 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
         <a href="${redirectLink}" target="_blank">${displayLink}</a>
       </div>
     </div>
+    <script>
+      // 监听卡片内容变化并发送高度
+      function updateHeight() {
+        const card = document.querySelector('.card');
+        const height = card.offsetHeight + 40; // 额外空间用于阴影
+        window.parent.postMessage({ type: 'resize', height }, '*');
+      }
+      
+      // 初始加载时更新高度
+      updateHeight();
+      
+      // 监听图片加载完成后再次更新高度
+      document.querySelector('img').onload = updateHeight;
+    </script>
   `;
 }

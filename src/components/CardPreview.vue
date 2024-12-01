@@ -1,8 +1,10 @@
 <template>
   <div class="preview-container">
-    <iframe
+    <iframe 
+      ref="previewFrame"
       :src="previewUrl"
-      style="border: none; width: 100%; height: 160px; overflow: hidden;"
+      style="border: none; width: 100%; overflow: hidden;"
+      :style="{ height: frameHeight + 'px' }"
       loading="lazy"
       title="Friend Card Preview"
     ></iframe>
@@ -10,7 +12,25 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
+
+const frameHeight = ref(160) // 默认高度
+const previewFrame = ref(null)
+
+// 监听来自 iframe 的消息
+const handleMessage = (e) => {
+  if (e.data && e.data.type === 'resize') {
+    frameHeight.value = e.data.height
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('message', handleMessage)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('message', handleMessage)
+})
 
 const props = defineProps({
   formData: {

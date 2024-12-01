@@ -102,15 +102,26 @@ const generatedUrl = computed(() => {
   return `${baseUrl}?${params.toString()}`
 })
 
-const iframeCode = computed(() => {
+const generateIframeCode = (url) => {
   return `<div style="max-width: 600px; margin: 0 auto;">
   <iframe 
-    src="${generatedUrl.value}"
+    src="${url}"
     style="border: none; width: 100%; height: 160px; overflow: hidden;"
     loading="lazy"
     title="Friend Card"
+    onload="(function(iframe){
+      window.addEventListener('message', function(e) {
+        if (e.data && e.data.type === 'resize') {
+          iframe.style.height = e.data.height + 'px';
+        }
+      });
+    })(this)"
   ></iframe>
-</div>`
+</div>`;
+};
+
+const iframeCode = computed(() => {
+  return generateIframeCode(generatedUrl.value);
 })
 
 const copyToClipboard = async (text) => {
