@@ -32,10 +32,10 @@ async function handleRequest(request) {
     const domain = displayLink !== '#' ? new URL(displayLink).hostname : 'zwei.de.eu.org';
 
     const styles = {
-      bgcolor: sanitizeInput(url.searchParams.get('bgcolor')),
-      textcolor: sanitizeInput(url.searchParams.get('textcolor')),
-      linkcolor: sanitizeInput(url.searchParams.get('linkcolor')),
-      font: sanitizeInput(url.searchParams.get('font'))
+      bgcolor: sanitizeInput(url.searchParams.get('bgcolor')) || 'linear-gradient(135deg, #e0e7ff, #f0f4f8)',
+      textcolor: sanitizeInput(url.searchParams.get('textcolor')) || '#1f2937',
+      linkcolor: sanitizeInput(url.searchParams.get('linkcolor')) || '#2563eb',
+      font: sanitizeInput(url.searchParams.get('font')) || 'ZCOOL KuaiLe'
     };
 
     const html = generateHTML(friendName, specialty, displayLink, redirectLink, avatarLink, domain, styles);
