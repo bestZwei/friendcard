@@ -3,8 +3,8 @@
     <iframe 
       ref="previewFrame"
       :src="previewUrl"
-      style="border: none; width: 100%; overflow: hidden; transition: height 0.3s;"
-      :style="{ height: frameHeight + 'px', minHeight: '160px' }"
+      style="border: none; width: 100%; overflow: hidden;"
+      :style="{ height: '160px' }"
       loading="lazy"
       title="Friend Card Preview"
     ></iframe>

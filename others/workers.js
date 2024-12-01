@@ -107,11 +107,11 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
 
   return `
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=ZCOOL+XiaoWei&family=ZCOOL+QingKe+HuangYou&family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@400;700&family=LXGW+WenKai&family=Roboto:wght@400;500;700&family=Poppins:wght@400;500;700&family=Open+Sans:wght@400;600&family=Inter:wght@400;500;600&family=Montserrat:wght@400;500;600&family=Lato:wght@400;700&family=Source+Sans+Pro:wght@400;600&family=Ubuntu:wght@400;500&family=Fira+Sans:wght@400;500&family=IBM+Plex+Sans:wght@400;500&family=Nunito+Sans:wght@400;600&family=Josefin+Sans:wght@400;500&family=Raleway:wght@400;500&family=Work+Sans:wght@400;500&family=Manrope:wght@400;500&family=DM+Sans:wght@400;500&family=Space+Grotesk:wght@400;500&family=Noto+Sans+Arabic:wght@400;500&family=Noto+Kufi+Arabic:wght@400;500&family=Amiri:wght@400;700&family=Noto+Sans+KR:wght@400;500&family=Nanum+Gothic:wght@400;700&family=Nanum+Myeongjo:wght@400;700&family=Noto+Sans+Vietnamese:wght@400;500&family=Be+Vietnam+Pro:wght@400;500&family=PT+Sans:wght@400;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=ZCOOL+XiaoWei&family=ZCOOL+QingKe+HuangYou&family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@400;700&family=LXGW+WenKai&family=Roboto:wght@400;500;700&family=Poppins:wght@400;500;700&family=Open+Sans:wght@400;600&family=Inter:wght@400;500;600&family=Montserrat:wght@400;500;600&family=Lato:wght@400;700&family=Source+Sans+Pro:wght@400;600&family=Ubuntu:wght@400;500&display=swap');
       
       .card {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         border: 2px solid #e2e8f0;
         border-radius: 20px;
         padding: 20px;
@@ -121,8 +121,6 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
         max-width: 600px;
         width: 100%;
         box-sizing: border-box;
-        min-height: 120px;
-        height: auto;
       }
       
       .card:hover {
@@ -131,8 +129,8 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
       }
       
       .avatar {
-        flex: 0 0 80px;
-        margin-right: 20px;
+        flex: 1;
+        max-width: 80px;
       }
       
       .avatar img {
@@ -143,15 +141,15 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
       }
       
       .content {
-        flex: 1;
-        min-width: 0;
+        flex: 2;
+        margin-left: 20px;
+        text-align: left;
       }
       
       .content h3 {
         margin: 0;
         font-size: 1.6em;
         color: ${textcolor};
-        word-wrap: break-word;
       }
       
       .content p {
@@ -160,8 +158,6 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
         font-size: 1em;
         line-height: 1.5;
         font-family: '${font}', sans-serif;
-        word-wrap: break-word;
-        white-space: pre-wrap;
       }
       
       .content a {
@@ -170,45 +166,10 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
         font-weight: 500;
         transition: color 0.3s;
         word-break: break-all;
-        display: inline-block;
-        max-width: 100%;
       }
       
       .content a:hover {
         color: ${linkcolor}dd;
-      }
-
-      @media (max-width: 480px) {
-        .card {
-          padding: 15px;
-        }
-        
-        .avatar {
-          flex: 0 0 60px;
-        }
-        
-        .avatar img {
-          width: 60px;
-          height: 60px;
-        }
-        
-        .content h3 {
-          font-size: 1.4em;
-        }
-        
-        .content p {
-          font-size: 0.95em;
-        }
-      }
-      
-      body {
-        margin: 0;
-        padding: 20px;
-        box-sizing: border-box;
-      }
-      
-      .card {
-        margin: 0 auto;
       }
     </style>
     <div class="card">
@@ -221,25 +182,5 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
         <a href="${redirectLink}" target="_blank">${displayLink}</a>
       </div>
     </div>
-    <script>
-      function updateIframeHeight() {
-        const height = document.documentElement.offsetHeight;
-        window.parent.postMessage({ type: 'resize', height: height }, '*');
-      }
-
-      // 创建 ResizeObserver 实例
-      const observer = new ResizeObserver(() => {
-        updateIframeHeight();
-      });
-
-      // 观察 card 元素
-      observer.observe(document.querySelector('.card'));
-
-      // 图片加载完成后更新高度
-      document.querySelector('img').onload = updateIframeHeight;
-
-      // 初始更新
-      updateIframeHeight();
-    </script>
   `;
 }
