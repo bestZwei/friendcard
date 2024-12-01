@@ -200,6 +200,16 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
           font-size: 0.95em;
         }
       }
+      
+      body {
+        margin: 0;
+        padding: 20px;
+        box-sizing: border-box;
+      }
+      
+      .card {
+        margin: 0 auto;
+      }
     </style>
     <div class="card">
       <div class="avatar">
@@ -212,18 +222,24 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
       </div>
     </div>
     <script>
-      // 监听卡片内容变化并发送高度
-      function updateHeight() {
-        const card = document.querySelector('.card');
-        const height = card.offsetHeight + 40; // 额外空间用于阴影
-        window.parent.postMessage({ type: 'resize', height }, '*');
+      function updateIframeHeight() {
+        const height = document.documentElement.offsetHeight;
+        window.parent.postMessage({ type: 'resize', height: height }, '*');
       }
-      
-      // 初始加载时更新高度
-      updateHeight();
-      
-      // 监听图片加载完成后再次更新高度
-      document.querySelector('img').onload = updateHeight;
+
+      // 创建 ResizeObserver 实例
+      const observer = new ResizeObserver(() => {
+        updateIframeHeight();
+      });
+
+      // 观察 card 元素
+      observer.observe(document.querySelector('.card'));
+
+      // 图片加载完成后更新高度
+      document.querySelector('img').onload = updateIframeHeight;
+
+      // 初始更新
+      updateIframeHeight();
     </script>
   `;
 }

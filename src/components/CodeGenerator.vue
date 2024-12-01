@@ -106,13 +106,13 @@ const generateIframeCode = (url) => {
   return `<div style="max-width: 600px; margin: 0 auto;">
   <iframe 
     src="${url}"
-    style="border: none; width: 100%; height: 160px; overflow: hidden;"
+    style="border: none; width: 100%; min-height: 160px; height: 160px; overflow: hidden; transition: height 0.3s;"
     loading="lazy"
     title="Friend Card"
     onload="(function(iframe){
       window.addEventListener('message', function(e) {
         if (e.data && e.data.type === 'resize') {
-          iframe.style.height = e.data.height + 'px';
+          iframe.style.height = Math.max(160, e.data.height) + 'px';
         }
       });
     })(this)"
