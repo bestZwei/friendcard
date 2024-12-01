@@ -269,8 +269,8 @@ const bgPresets = [
   { name: '日落渐变', value: 'linear-gradient(135deg, #fef3c7, #fee2e2)' },
   { name: '极光渐变', value: 'linear-gradient(135deg, #a7f3d0, #93c5fd)' },
   { name: '樱花渐变', value: 'linear-gradient(135deg, #fce7f3, #dbeafe)' },
-  { name: '海洋渐变', value: 'linear-gradient(135deg, #bfdbfe, #93c5fd)' },
-  { name: '森林渐变', value: 'linear-gradient(135deg, #bbf7d0, #86efac)' }
+  { name: '青柠渐变', value: 'linear-gradient(135deg, #ecfccb, #d9f99d)' },
+  { name: '珊瑚渐变', value: 'linear-gradient(135deg, #ffedd5, #fed7aa)' }
 ]
 
 const textPresets = [
