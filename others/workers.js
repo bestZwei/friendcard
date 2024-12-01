@@ -116,7 +116,7 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
         border-radius: 20px;
         padding: 20px;
         background: ${bgcolor};
-        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
         transition: transform 0.3s, box-shadow 0.3s;
         max-width: 600px;
         width: 100%;
@@ -125,7 +125,7 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
       
       .card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.12);
       }
       
       .avatar {
@@ -137,7 +137,7 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
         width: 80px;
         height: 80px;
         border-radius: 50%;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
       }
       
       .content {
