@@ -285,7 +285,7 @@ const fontOptions = {
     { label: '霞鹜文楷', value: 'LXGW WenKai' },
     { label: '站酷文艺体', value: 'ZCOOL XiaoWei' },
     { label: '站酷高端黑', value: 'ZCOOL QingKe HuangYou' },
-    { label: '��善政硬笔行书', value: 'Ma Shan Zheng' },
+    { label: '马善政硬笔行书', value: 'Ma Shan Zheng' },
     { label: '钟齐志莽行书', value: 'Zhi Mang Xing' }
   ],
   '英文字体': [
