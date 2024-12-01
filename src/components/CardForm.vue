@@ -21,10 +21,10 @@
           id="specialty"
           v-model="localData.specialty"
           type="text"
-          maxlength="42"
-          placeholder="输入个性简介"
+          maxlength="30"
+          placeholder="一句话介绍"
         >
-        <span class="char-count">{{ localData.specialty.length }}/42</span>
+        <span class="char-count">{{ localData.specialty.length }}/30</span>
       </div>
 
       <div class="form-group">
@@ -283,7 +283,7 @@ const fontOptions = {
     { label: 'IBM Plex Sans', value: 'IBM Plex Sans' },
     { label: 'Nunito Sans', value: 'Nunito Sans' }
   ],
-  '法语字体': [
+  '���语字体': [
     { label: 'Josefin Sans', value: 'Josefin Sans' },
     { label: 'Raleway', value: 'Raleway' },
     { label: 'Work Sans', value: 'Work Sans' }
