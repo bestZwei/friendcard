@@ -154,22 +154,12 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:formData'])
-const localData = reactive({
-  name: '',
-  specialty: '',
-  link: '',
-  redirect: '',
-  avatar: '',
-  bgcolor: 'linear-gradient(135deg, #e0e7ff, #f0f4f8)',
-  textcolor: '#1f2937',
-  linkcolor: '#2563eb',
-  font: 'ZCOOL KuaiLe'
-})
+const emit = defineEmits(['update:modelValue'])
+const localData = reactive({ ...props.modelValue })
 
 // 当本地数据改变时，更新父组件
 watch(localData, (newValue) => {
-  emit('update:formData', { ...newValue })
+  emit('update:modelValue', { ...newValue })
 }, { deep: true })
 
 const errors = ref({})
@@ -295,7 +285,7 @@ const fontOptions = {
     { label: '霞鹜文楷', value: 'LXGW WenKai' },
     { label: '站酷文艺体', value: 'ZCOOL XiaoWei' },
     { label: '站酷高端黑', value: 'ZCOOL QingKe HuangYou' },
-    { label: '马善政硬笔行书', value: 'Ma Shan Zheng' },
+    { label: '��善政硬笔行书', value: 'Ma Shan Zheng' },
     { label: '钟齐志莽行书', value: 'Zhi Mang Xing' }
   ],
   '英文字体': [
