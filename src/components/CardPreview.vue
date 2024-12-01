@@ -3,8 +3,7 @@
     <iframe 
       ref="previewFrame"
       :src="previewUrl"
-      style="border: none; width: 100%; overflow: hidden;"
-      :style="{ height: '160px' }"
+      style="border: none; width: 100%; overflow: visible; height: auto;"
       loading="lazy"
       title="Friend Card Preview"
     ></iframe>

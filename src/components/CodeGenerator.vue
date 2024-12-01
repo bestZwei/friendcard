@@ -106,7 +106,7 @@ const generateIframeCode = (url) => {
   return `<div style="max-width: 600px; margin: 0 auto;">
   <iframe 
     src="${url}"
-    style="border: none; width: 100%; height: 160px; overflow: hidden;"
+    style="border: none; width: 100%; height: auto; overflow: visible;"
     loading="lazy"
     title="Friend Card"
   ></iframe>
