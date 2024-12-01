@@ -38,6 +38,12 @@ async function handleRequest(request) {
       font: sanitizeInput(url.searchParams.get('font'))
     };
 
+    Object.keys(styles).forEach(key => {
+      if (styles[key] === undefined) {
+        delete styles[key];
+      }
+    });
+
     const html = generateHTML(friendName, specialty, displayLink, redirectLink, avatarLink, domain, styles);
 
     return new Response(html, {

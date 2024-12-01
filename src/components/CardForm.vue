@@ -223,7 +223,7 @@ onMounted(() => {
 })
 
 const bgPresets = [
-  { name: '默认渐变', value: 'linear-gradient(135deg, #e0e7ff, #f0f4f8)' },
+  { name: '默认渐变', value: 'linear-gradient(135deg, #e0e7ff, #f0f4f6)' },
   { name: '暖色渐变', value: 'linear-gradient(135deg, #fef3c7, #ffe4e6)' },
   { name: '冷色渐变', value: 'linear-gradient(135deg, #dbeafe, #e0e7ff)' },
   { name: '薄荷渐变', value: 'linear-gradient(135deg, #d1fae5, #dbeafe)' },
