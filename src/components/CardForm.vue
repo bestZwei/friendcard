@@ -216,12 +216,26 @@ const validateField = (field) => {
       }
       break
     case 'bgcolor':
-      if (localData.value.bgcolor && 
-          !localData.value.bgcolor.match(/(#[0-9A-Fa-f]{6}|linear-gradient)/)) {
+      if (localData.bgcolor && !isValidColor(localData.bgcolor)) {
         errors.value.bgcolor = '请输入有效的颜色值或渐变'
       }
       break
+    case 'textcolor':
+      if (localData.textcolor && !isValidColor(localData.textcolor)) {
+        errors.value.textcolor = '请输入有效的颜色值'
+      }
+      break
+    case 'linkcolor':
+      if (localData.linkcolor && !isValidColor(localData.linkcolor)) {
+        errors.value.linkcolor = '请输入有效的颜色值'
+      }
+      break
   }
+}
+
+const isValidColor = (color) => {
+  // 检查是否为有效的颜色值或渐变
+  return /^(#[0-9A-Fa-f]{6}|linear-gradient\(([^()]+)\))$/.test(color)
 }
 
 // 保存到本地存储
