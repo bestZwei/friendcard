@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, provide } from 'vue'
 import { useDark, useToggle } from '@vueuse/core'
 import CardForm from './components/CardForm.vue'
 import CodeGenerator from './components/CodeGenerator.vue'
@@ -51,6 +51,9 @@ const formData = ref({
   linkcolor: '#2563eb',
   font: 'ZCOOL KuaiLe'
 })
+
+const toast = ref(null)
+provide('toast', toast)
 </script>
 
 <style>
