@@ -13,11 +13,11 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 
-const frameHeight = ref(160)
+const frameHeight = ref(195)
 
 const handleMessage = (e) => {
   if (e.data && e.data.type === 'resize') {
-    frameHeight.value = Math.max(160, e.data.height)
+    frameHeight.value = Math.max(195, e.data.height)
   }
 }
 

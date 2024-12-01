@@ -10,7 +10,7 @@
       <div class="preview-container">
         <iframe 
           :src="generatedUrl"
-          style="border: none; width: 100%; height: 160px; overflow: hidden;"
+          style="border: none; width: 100%; height: 195px; overflow: hidden;"
           loading="lazy"
           title="Friend Card Preview"
         ></iframe>
@@ -41,33 +41,13 @@
       </div>
     </div>
   </div>
-
-  <!-- Toast 提示 -->
-  <Teleport to="body">
-    <div 
-      v-if="showToast" 
-      class="toast"
-      :class="{ 'show': showToast }"
-    >
-      {{ toastMessage }}
-    </div>
-  </Teleport>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
+import { useToast } from '../composables/useToast'
 
-// Toast 状态
-const showToast = ref(false)
-const toastMessage = ref('')
-
-const showToastMessage = (message) => {
-  toastMessage.value = message
-  showToast.value = true
-  setTimeout(() => {
-    showToast.value = false
-  }, 2000)
-}
+const { showToastMessage } = useToast()
 
 const props = defineProps({
   formData: {
@@ -76,16 +56,26 @@ const props = defineProps({
   }
 })
 
+const baseUrl = 'https://friendcards.zwei.de.eu.org'
+
 const generatedUrl = computed(() => {
-  const baseUrl = 'https://friendcards.zwei.de.eu.org/'
   const params = new URLSearchParams()
   
-  if (props.formData.name) params.set('name', props.formData.name)
-  if (props.formData.specialty) params.set('specialty', props.formData.specialty)
-  if (props.formData.link) params.set('link', props.formData.link)
-  if (props.formData.redirect) params.set('redirect', props.formData.redirect)
-  if (props.formData.avatar) params.set('avatar', props.formData.avatar)
-  
+  if (props.formData.name) {
+    params.set('name', props.formData.name)
+  }
+  if (props.formData.specialty) {
+    params.set('specialty', props.formData.specialty)
+  }
+  if (props.formData.link) {
+    params.set('link', props.formData.link)
+  }
+  if (props.formData.redirect) {
+    params.set('redirect', props.formData.redirect)
+  }
+  if (props.formData.avatar) {
+    params.set('avatar', props.formData.avatar)
+  }
   if (props.formData.bgcolor !== 'linear-gradient(135deg, #e0e7ff, #f0f4f8)') {
     params.set('bgcolor', props.formData.bgcolor)
   }
@@ -142,87 +132,51 @@ const copyToClipboard = async (text) => {
   margin-bottom: 1rem;
 }
 
+.section-header h2,
+.section-header h3 {
+  margin: 0;
+  color: #374151;
+}
+
 .preview-section {
   margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: #f8fafc;
-  border-radius: 0.75rem;
 }
 
 .preview-container {
-  background: white;
+  margin-top: 1rem;
+  border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .code-section {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-top: 2rem;
 }
 
 .code-container {
-  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+  background: #f8fafc;
   padding: 1rem;
   border-radius: 0.5rem;
   overflow-x: auto;
-  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  color: #334155;
   white-space: pre-wrap;
   word-break: break-all;
-  color: #0f172a;
 }
 
-.copy-btn {
-  padding: 0.5rem 1.5rem;
-  background: linear-gradient(135deg, #4f46e5, #3b82f6);
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  font-weight: 500;
+.dark .code-generator {
+  background: var(--bg-card);
 }
 
-.copy-btn:hover {
-  background: linear-gradient(135deg, #4338ca, #2563eb);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-  transform: translateY(-1px);
+.dark .code-container {
+  background: var(--bg-input);
 }
 
-.copy-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.toast {
-  position: fixed;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%) translateY(100%);
-  background: linear-gradient(135deg, #4f46e5, #3b82f6);
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  transition: transform 0.3s ease;
-  z-index: 1000;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.toast.show {
-  transform: translateX(-50%) translateY(0);
-}
-
-h2, h3 {
-  color: #1f2937;
-  margin: 0;
+.dark code {
+  color: var(--text-primary);
 }
 </style> 

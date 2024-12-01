@@ -101,13 +101,27 @@ function isValidURL(string) {
   }
 }
 
-function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, domain, styles) {
+function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, domain) {
   const avatarURL = avatarLink || `https://api.faviconkit.com/${domain}/128`;
-  const { bgcolor, textcolor, linkcolor, font } = styles;
 
   return `
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=ZCOOL+XiaoWei&family=ZCOOL+QingKe+HuangYou&family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@400;700&family=LXGW+WenKai&family=Roboto:wght@400;500;700&family=Poppins:wght@400;500;700&family=Open+Sans:wght@400;600&family=Inter:wght@400;500;600&family=Montserrat:wght@400;500;600&family=Lato:wght@400;700&family=Source+Sans+Pro:wght@400;600&family=Ubuntu:wght@400;500&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Poppins:wght@400;500;700&family=ZCOOL+KuaiLe&display=swap');
+      
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 16px;
+      }
       
       .card {
         display: flex;
@@ -115,61 +129,96 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
         border: 2px solid #e2e8f0;
         border-radius: 20px;
         padding: 20px;
-        background: ${bgcolor};
-        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        background: linear-gradient(135deg, #e0e7ff, #f0f4f8);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
         transition: transform 0.3s, box-shadow 0.3s;
-        max-width: 600px;
         width: 100%;
-        box-sizing: border-box;
+        max-width: 600px;
+        gap: 20px;
       }
       
       .card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.2);
       }
       
       .avatar {
-        flex: 1;
-        max-width: 80px;
+        flex-shrink: 0;
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       
       .avatar img {
         width: 80px;
         height: 80px;
         border-radius: 50%;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        object-fit: cover;
       }
       
       .content {
-        flex: 2;
-        margin-left: 20px;
-        text-align: left;
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
       }
       
       .content h3 {
-        margin: 0;
+        margin: 0 0 10px 0;
         font-size: 1.6em;
-        color: ${textcolor};
+        color: #1f2937;
+        word-wrap: break-word;
       }
       
       .content p {
-        margin: 10px 0;
-        color: ${textcolor};
+        margin: 0 0 10px 0;
+        color: #4b5563;
         font-size: 1em;
         line-height: 1.5;
-        font-family: '${font}', sans-serif;
+        font-family: 'ZCOOL KuaiLe', sans-serif;
+        word-wrap: break-word;
       }
       
       .content a {
-        color: ${linkcolor};
+        color: #2563eb;
         text-decoration: none;
         font-weight: 500;
         transition: color 0.3s;
+        display: block;
+        word-wrap: break-word;
         word-break: break-all;
       }
       
       .content a:hover {
-        color: ${linkcolor}dd;
+        color: #1d4ed8;
+      }
+
+      @media (max-width: 480px) {
+        .card {
+          padding: 16px;
+        }
+        
+        .avatar {
+          width: 60px;
+          height: 60px;
+        }
+        
+        .avatar img {
+          width: 60px;
+          height: 60px;
+        }
+        
+        .content h3 {
+          font-size: 1.4em;
+        }
+        
+        .content p {
+          font-size: 0.95em;
+        }
       }
     </style>
     <div class="card">
