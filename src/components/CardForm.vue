@@ -283,7 +283,7 @@ const fontOptions = {
     { label: 'IBM Plex Sans', value: 'IBM Plex Sans' },
     { label: 'Nunito Sans', value: 'Nunito Sans' }
   ],
-  '���语字体': [
+  '法语字体': [
     { label: 'Josefin Sans', value: 'Josefin Sans' },
     { label: 'Raleway', value: 'Raleway' },
     { label: 'Work Sans', value: 'Work Sans' }

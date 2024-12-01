@@ -22,7 +22,7 @@
 ```html
 <div style="max-width: 600px; margin: 0 auto;">
   <iframe src="https://friendcards.zwei.de.eu.org/?name=Zwei&specialty=一只野生的大学生&link=https://zwei.de.eu.org&redirect=https://zwei.de.eu.org/blog" 
-          style="border:none; width:100%; height:160px;" 
+          style="border:none; width:100%; height:195px;" 
           scrolling="no"></iframe>
 </div>
 ```
@@ -46,7 +46,7 @@
 
 ```html
 <iframe src="https://friendcards.zwei.de.eu.org/?name=YourName&specialty=YourSpecialty&link=YourLink&redirect=YourRedirectLink&avatar=YourAvatarLink" 
-        style="border:none; width:100%; height:160px;" 
+        style="border:none; width:100%; height:195px;" 
         scrolling="no"></iframe>
 ```
 
