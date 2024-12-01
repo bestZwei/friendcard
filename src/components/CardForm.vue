@@ -144,7 +144,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted, watch } from 'vue'
+import { computed, ref, onMounted, watch, reactive } from 'vue'
 import { useVModel } from '@vueuse/core'
 
 const props = defineProps({
@@ -154,8 +154,24 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:modelValue'])
-const localData = useVModel(props, 'modelValue', emit)
+const emit = defineEmits(['update:modelValue', 'update:formData'])
+const localData = reactive({
+  name: '',
+  specialty: '',
+  link: '',
+  redirect: '',
+  avatar: '',
+  bgcolor: 'linear-gradient(135deg, #e0e7ff, #f0f4f8)',
+  textcolor: '#1f2937',
+  linkcolor: '#2563eb',
+  font: 'ZCOOL KuaiLe'
+})
+
+// 当本地数据改变时，更新父组件
+watch(localData, (newValue) => {
+  emit('update:formData', { ...newValue })
+}, { deep: true })
+
 const errors = ref({})
 
 const validateUrl = (url) => {
@@ -218,7 +234,7 @@ onMounted(() => {
   const savedData = localStorage.getItem('friendCardData')
   if (savedData) {
     const parsed = JSON.parse(savedData)
-    Object.assign(localData.value, parsed)
+    Object.assign(localData, parsed)
   }
 })
 
