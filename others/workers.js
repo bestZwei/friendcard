@@ -24,12 +24,15 @@ async function handleRequest(request) {
 
   try {
     const url = new URL(request.url);
-    const friendName = sanitizeInput(url.searchParams.get('name')) || 'friend';
-    const specialty = sanitizeInput(url.searchParams.get('specialty')) || 'INFO';
-    const displayLink = sanitizeInput(url.searchParams.get('link')) || '#';
-    const redirectLink = sanitizeInput(url.searchParams.get('redirect')) || displayLink;
+    const friendName = sanitizeInput(url.searchParams.get('name')) || '友链卡片生成器';
+    const specialty = sanitizeInput(url.searchParams.get('specialty')) || '生成一个类似我这样的卡片';
+    const displayLink = sanitizeInput(url.searchParams.get('link')) || 'https://friendcard.is-an.org';
+    const redirectLink = sanitizeInput(url.searchParams.get('redirect')) || 
+      (displayLink.startsWith('http') ? displayLink : `https://${displayLink}`);
     const avatarLink = sanitizeInput(url.searchParams.get('avatar'));
-    const domain = displayLink !== '#' ? new URL(displayLink).hostname : 'zwei.de.eu.org';
+    const domain = displayLink !== 'https://friendcard.is-an.org' ? 
+      (new URL(displayLink.startsWith('http') ? displayLink : `https://${displayLink}`)).hostname : 
+      'friendcard.is-an.org';
 
     const styles = {
       bgcolor: sanitizeInput(url.searchParams.get('bgcolor')) || 'linear-gradient(135deg, #e0e7ff, #f0f4f8)',
@@ -105,7 +108,14 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
     font = 'ZCOOL KuaiLe' 
   } = styles;
   
-  const avatarURL = avatarLink || `https://api.faviconkit.com/${domain}/128`;
+  let avatarURL;
+  if (avatarLink) {
+    avatarURL = avatarLink;
+  } else if (displayLink && displayLink !== 'https://friendcard.is-an.org') {
+    avatarURL = `https://api.faviconkit.com/${domain}/128`;
+  } else {
+    avatarURL = 'https://friendcard.is-an.org/favicon.svg';
+  }
 
   return `
     <style>
@@ -234,7 +244,7 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
     </style>
     <div class="card">
       <div class="avatar">
-        <img src="${avatarURL}" alt="${name}'s avatar" onerror="this.onerror=null;this.src='https://via.placeholder.com/80';">
+        <img src="${avatarURL}" alt="${name}'s avatar" onerror="this.onerror=null;this.src='https://friendcard.is-an.org/favicon.svg';">
       </div>
       <div class="content">
         <h3>${name}</h3>

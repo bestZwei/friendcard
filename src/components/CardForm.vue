@@ -267,12 +267,10 @@ const bgPresets = [
   { name: '薄荷渐变', value: 'linear-gradient(135deg, #d1fae5, #dbeafe)' },
   { name: '紫色渐变', value: 'linear-gradient(135deg, #ede9fe, #fae8ff)' },
   { name: '日落渐变', value: 'linear-gradient(135deg, #fef3c7, #fee2e2)' },
-  { name: '纯白', value: '#ffffff' },
-  { name: '象牙白', value: '#fffff0' },
-  { name: '浅灰', value: '#f3f4f6' },
-  { name: '浅蓝', value: '#f0f9ff' },
-  { name: '浅粉', value: '#fdf2f8' },
-  { name: '浅紫', value: '#f5f3ff' },
+  { name: '极光渐变', value: 'linear-gradient(135deg, #a7f3d0, #93c5fd)' },
+  { name: '樱花渐变', value: 'linear-gradient(135deg, #fce7f3, #dbeafe)' },
+  { name: '海洋渐变', value: 'linear-gradient(135deg, #bfdbfe, #93c5fd)' },
+  { name: '森林渐变', value: 'linear-gradient(135deg, #bbf7d0, #86efac)' }
 ]
 
 const textPresets = [
@@ -280,6 +278,8 @@ const textPresets = [
   { name: '黑色', value: '#000000' },
   { name: '深蓝', value: '#1e3a8a' },
   { name: '深棕', value: '#3f2f1f' },
+  { name: '深紫', value: '#4c1d95' },
+  { name: '深绿', value: '#064e3b' }
 ]
 
 const linkPresets = [
