@@ -16,16 +16,15 @@
       </div>
 
       <div class="form-group">
-        <label for="specialty">简介 *</label>
+        <label for="specialty">简介</label>
         <input
           id="specialty"
           v-model="localData.specialty"
           type="text"
+          maxlength="42"
           placeholder="输入个性简介"
-          maxlength="100"
-          @blur="validateField('specialty')"
         >
-        <span class="error-text" v-if="errors.specialty">{{ errors.specialty }}</span>
+        <span class="char-count">{{ localData.specialty.length }}/42</span>
       </div>
 
       <div class="form-group">
@@ -444,4 +443,10 @@ select optgroup {
 
 /* 添加字体预加载 */
 @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC&family=Roboto&family=Poppins&family=Playfair+Display&family=Inter&family=Noto+Sans+JP&family=Noto+Sans+KR&family=Dancing+Script&display=swap');
+
+.char-count {
+  font-size: 0.875rem;
+  color: var(--neutral-500);
+  margin-left: 0.5rem;
+}
 </style> 
