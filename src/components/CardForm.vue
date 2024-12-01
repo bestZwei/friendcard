@@ -154,7 +154,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:modelValue', 'update:formData'])
+const emit = defineEmits(['update:formData'])
 const localData = reactive({
   name: '',
   specialty: '',
