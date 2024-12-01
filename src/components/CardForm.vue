@@ -150,7 +150,18 @@ import { useVModel } from '@vueuse/core'
 const props = defineProps({
   modelValue: {
     type: Object,
-    required: true
+    required: true,
+    default: () => ({
+      name: '',
+      specialty: '',
+      link: '',
+      redirect: '',
+      avatar: '',
+      bgcolor: 'linear-gradient(135deg, #e0e7ff, #f0f4f8)',
+      textcolor: '#1f2937',
+      linkcolor: '#2563eb',
+      font: 'ZCOOL KuaiLe'
+    })
   }
 })
 
@@ -238,7 +249,14 @@ onMounted(() => {
   const savedData = localStorage.getItem('friendCardData')
   if (savedData) {
     const parsed = JSON.parse(savedData)
-    Object.assign(localData, parsed)
+    // 合并默认值和保存的数据
+    Object.assign(localData, {
+      bgcolor: 'linear-gradient(135deg, #e0e7ff, #f0f4f8)',
+      textcolor: '#1f2937',
+      linkcolor: '#2563eb',
+      font: 'ZCOOL KuaiLe',
+      ...parsed
+    })
   }
 })
 
