@@ -9,9 +9,10 @@
           v-model="localData.name"
           type="text"
           placeholder="输入你的名字"
-          maxlength="50"
+          @input="validateNameLength"
           @blur="validateField('name')"
         >
+        <span class="char-count">{{ nameWidth }}/14</span>
         <span class="error-text" v-if="errors.name">{{ errors.name }}</span>
       </div>
 
@@ -21,10 +22,11 @@
           id="specialty"
           v-model="localData.specialty"
           type="text"
-          maxlength="30"
           placeholder="一句话介绍"
+          @input="validateSpecialtyLength"
         >
-        <span class="char-count">{{ localData.specialty.length }}/30</span>
+        <span class="char-count">{{ specialtyWidth }}/30</span>
+        <span class="error-text" v-if="errors.specialty">{{ errors.specialty }}</span>
       </div>
 
       <div class="form-group">
@@ -168,7 +170,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 const localData = reactive({ ...props.modelValue })
 
-// 当本地数据改变时，更新父组件
+// 当本地数据改变时，更新父组
 watch(localData, (newValue) => {
   emit('update:modelValue', { ...newValue })
 }, { deep: true })
@@ -178,10 +180,59 @@ const errors = ref({})
 const validateUrl = (url) => {
   if (!url) return true
   try {
-    new URL(url)
+    new URL(url.startsWith('http') ? url : `https://${url}`)
     return true
   } catch {
     return false
+  }
+}
+
+const calculateCharWidth = (char) => {
+  if (/[0-9a-z]/.test(char)) {
+    return 0.5;
+  }
+  return 1;
+}
+
+const calculateStringWidth = (str) => {
+  return str.split('').reduce((total, char) => total + calculateCharWidth(char), 0);
+}
+
+const nameWidth = computed(() => {
+  return calculateStringWidth(localData.name).toFixed(1);
+});
+
+function validateNameLength(event) {
+  const input = event.target;
+  const text = input.value;
+  const width = calculateStringWidth(text);
+  
+  if (width > 14) {
+    // 如果超出最大宽度，逐个字符截取直到满足宽度要求
+    let i = text.length;
+    while (i > 0 && calculateStringWidth(text.slice(0, i)) > 14) {
+      i--;
+    }
+    localData.name = text.slice(0, i);
+  }
+}
+
+const specialtyWidth = computed(() => {
+  return calculateStringWidth(localData.specialty).toFixed(1);
+});
+
+function validateSpecialtyLength(event) {
+  const input = event.target;
+  const text = input.value;
+  const width = calculateStringWidth(text);
+  
+  if (width > 30) {
+    // 如果超出最大宽度，逐个字符截取直到满足宽度要求
+    let i = text.length;
+    while (i > 0 && calculateStringWidth(text.slice(0, i)) > 30) {
+      i--;
+    }
+    localData.specialty = text.slice(0, i);
   }
 }
 
@@ -190,29 +241,31 @@ const validateField = (field) => {
   
   switch (field) {
     case 'name':
-      if (!localData.value.name) {
+      if (!localData.name) {
         errors.value.name = '名称是必填项'
+      } else if (calculateStringWidth(localData.name) > 14) {
+        errors.value.name = '名称超出长度限制'
       }
       break
     case 'specialty':
-      if (!localData.value.specialty) {
-        errors.value.specialty = '简介是必填项'
+      if (calculateStringWidth(localData.specialty) > 30) {
+        errors.value.specialty = '简介超出长度限制'
       }
       break
     case 'link':
-      if (!localData.value.link) {
+      if (!localData.link) {
         errors.value.link = '显示链接是必填项'
-      } else if (!validateUrl(localData.value.link)) {
+      } else if (!validateUrl(localData.link)) {
         errors.value.link = '请输入有效的URL'
       }
       break
     case 'redirect':
-      if (localData.value.redirect && !validateUrl(localData.value.redirect)) {
+      if (localData.redirect && !validateUrl(localData.redirect)) {
         errors.value.redirect = '请输入有效的URL'
       }
       break
     case 'avatar':
-      if (localData.value.avatar && !validateUrl(localData.value.avatar)) {
+      if (localData.avatar && !validateUrl(localData.avatar)) {
         errors.value.avatar = '请输入有效的URL'
       }
       break
@@ -235,8 +288,12 @@ const validateField = (field) => {
 }
 
 const isValidColor = (color) => {
-  // 检查是否为有效的颜色值或渐变
-  return /^(#[0-9A-Fa-f]{6}|linear-gradient\(([^()]+)\))$/.test(color)
+  if (!color) return true
+  // 检查十六进制颜色
+  if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color)) return true
+  // 检查渐变
+  if (/^linear-gradient\(([^()]+)\)$/.test(color)) return true
+  return false
 }
 
 // 保存到本地存储

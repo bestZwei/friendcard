@@ -24,6 +24,7 @@ async function handleRequest(request) {
 
   try {
     const url = new URL(request.url);
+    const format = url.searchParams.get('format')?.toLowerCase() || 'html';
     const friendName = sanitizeInput(url.searchParams.get('name')) || '友链卡片生成器';
     const specialty = sanitizeInput(url.searchParams.get('specialty')) || '生成一个类似我这样的卡片';
     const displayLink = sanitizeInput(url.searchParams.get('link')) || 'https://friendcard.is-an.org';
@@ -41,11 +42,23 @@ async function handleRequest(request) {
       font: sanitizeInput(url.searchParams.get('font')) || 'ZCOOL KuaiLe'
     };
 
-    const html = generateHTML(friendName, specialty, displayLink, redirectLink, avatarLink, domain, styles);
+    let response;
+    if (format === 'svg') {
+      const svg = await generateSVG(friendName, specialty, displayLink, redirectLink, avatarLink, domain, styles);
+      response = new Response(svg, {
+        headers: { 
+          'content-type': 'image/svg+xml',
+          'cache-control': 'public, max-age=3600'
+        },
+      });
+    } else {
+      const html = generateHTML(friendName, specialty, displayLink, redirectLink, avatarLink, domain, styles);
+      response = new Response(html, {
+        headers: { 'content-type': 'text/html;charset=UTF-8' },
+      });
+    }
 
-    return new Response(html, {
-      headers: { 'content-type': 'text/html;charset=UTF-8' },
-    });
+    return response;
   } catch (error) {
     console.error('Error processing request:', error);
     return new Response('Error processing request', { status: 500 });
@@ -253,4 +266,273 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
       </div>
     </div>
   `;
+}
+
+function parseCSSGradient(gradient) {
+  // 提取角度
+  const angleMatch = gradient.match(/(\d+)deg/);
+  const angle = angleMatch ? parseInt(angleMatch[1]) : 135;
+  
+  // 提取所有颜色值和位置
+  const colorStops = gradient.match(/(#[a-fA-F0-9]{3,8}|rgba?\([^)]+\))(\s+\d+%)?/g) || [];
+  
+  return {
+    angle,
+    stops: colorStops.map(stop => {
+      const [color, position] = stop.split(/\s+/);
+      return {
+        color,
+        offset: position || null
+      };
+    })
+  };
+}
+
+// 布局相关的常量
+const SVG_WIDTH = 560;          // SVG 总宽度
+const AVATAR_X = 36;            // 头像左边距
+const AVATAR_SIZE = 96;         // 头像尺寸
+const SECTION_GAP = 24;         // 头像区域和文本区域的间隔，进一步缩小
+const TEXT_LEFT_MARGIN = AVATAR_X + AVATAR_SIZE + SECTION_GAP;  // 文本起始位置
+
+// 文本相关的常量
+const TITLE_SIZE = 28;          // 标题字号
+const TEXT_SIZE = 18;           // 简介字号
+const LINK_SIZE = 16;           // 链接字号
+const MAX_NAME_WIDTH = 14;      // 名称最大宽度
+const MAX_LINE_CHARS = 19;      // 简介每行最大中文字符数
+
+// 修改文本换行函数
+function wrapText(text, fontSize) {
+  const words = text.split('');
+  let lines = [];
+  let currentLine = '';
+  let currentWidth = 0;
+  
+  for (let i = 0; i < words.length; i++) {
+    const charWidth = calculateCharWidth(words[i]);
+    // 使用中文字符数作为换行标准（19个中文字符）
+    if (currentWidth + charWidth > MAX_LINE_CHARS) {
+      lines.push(currentLine);
+      currentLine = words[i];
+      currentWidth = charWidth;
+    } else {
+      currentLine += words[i];
+      currentWidth += charWidth;
+    }
+  }
+  
+  if (currentLine) {
+    lines.push(currentLine);
+  }
+  
+  return lines;
+}
+
+// 添加字符宽度计算函数
+function calculateCharWidth(char) {
+  if (/[0-9a-z]/.test(char)) {
+    return 0.5;  // 数字和小写字母算半个字符
+  }
+  return 1;  // 其他字符算一个字符
+}
+
+// 计算字符串的总宽度
+function calculateStringWidth(str) {
+  return str.split('').reduce((total, char) => total + calculateCharWidth(char), 0);
+}
+
+
+// 在生成 SVG 时使用这些常量
+async function generateSVG(name, specialty, displayLink, redirectLink, avatarLink, domain, styles = {}) {
+  const { 
+    bgcolor = 'linear-gradient(135deg, #e0e7ff, #f0f4f8)', 
+    textcolor = '#1f2937', 
+    linkcolor = '#2563eb', 
+    font = 'ZCOOL KuaiLe' 
+  } = styles;
+
+  let avatarURL;
+  let avatarBase64;
+  
+  try {
+    if (avatarLink) {
+      const response = await fetch(avatarLink);
+      const buffer = await response.arrayBuffer();
+      avatarBase64 = `data:${response.headers.get('content-type')};base64,${btoa(String.fromCharCode(...new Uint8Array(buffer)))}`;
+    } else if (displayLink && displayLink !== 'https://friendcard.is-an.org') {
+      const response = await fetch(`https://api.faviconkit.com/${domain}/128`);
+      const buffer = await response.arrayBuffer();
+      avatarBase64 = `data:${response.headers.get('content-type')};base64,${btoa(String.fromCharCode(...new Uint8Array(buffer)))}`;
+    } else {
+      // 默认头像也转为base64
+      const response = await fetch('https://friendcard.is-an.org/favicon.svg');
+      const buffer = await response.arrayBuffer();
+      avatarBase64 = `data:${response.headers.get('content-type')};base64,${btoa(String.fromCharCode(...new Uint8Array(buffer)))}`;
+    }
+  } catch (error) {
+    console.error('Error loading avatar:', error);
+    // 如果加载失败，使用一个简单的内嵌SVG作为默认头像
+    avatarBase64 = 'data:image/svg+xml;base64,' + btoa(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+        <rect width="128" height="128" fill="#e5e7eb"/>
+        <text x="64" y="64" text-anchor="middle" dy=".3em" fill="#9ca3af" font-size="64">?</text>
+      </svg>
+    `);
+  }
+
+  // 修改 defs 部分
+  let defs = `
+    <defs>
+      <!-- 卡片阴影 -->
+      <filter id="card-shadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="4"/>
+        <feOffset dx="0" dy="4" result="offsetblur"/>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.15"/>
+        </feComponentTransfer>
+        <feMerge>
+          <feMergeNode/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+
+      <!-- 头像阴影 -->
+      <filter id="avatar-shadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+        <feOffset dx="0" dy="2" result="offsetblur"/>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.15"/>
+        </feComponentTransfer>
+        <feMerge>
+          <feMergeNode/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    `;
+
+    // 如果是渐变背景,添加静态渐变定义
+    if (bgcolor.includes('linear-gradient')) {
+      const gradient = parseCSSGradient(bgcolor);
+      const [x1, y1, x2, y2] = calculateGradientPoints(gradient.angle);
+      
+      defs += `
+        <linearGradient id="cardGradient" x1="${x1}%" y1="${y1}%" x2="${x2}%" y2="${y2}%">
+          ${gradient.stops.map((stop, index) => `
+            <stop offset="${stop.offset || (index === 0 ? '0%' : '100%')}" 
+                  style="stop-color:${stop.color};stop-opacity:1"/>
+          `).join('')}
+        </linearGradient>
+      `;
+    }
+
+    defs += `</defs>`;
+
+    // 处理名称长度
+    const MAX_NAME_WIDTH = 14;
+    let truncatedName = name;
+    let currentWidth = calculateStringWidth(name);
+    
+    if (currentWidth > MAX_NAME_WIDTH) {
+      // 如果超出最大宽度，个字符截取直到满足宽度要求
+      let i = name.length;
+      while (i > 0 && calculateStringWidth(name.slice(0, i)) > MAX_NAME_WIDTH) {
+        i--;
+      }
+      truncatedName = name.slice(0, i);
+    }
+
+    // 调整起始位置
+    const TITLE_Y = 54;
+    const CONTENT_START_Y = TITLE_Y + 43;
+    const TEXT_SPACING = 26;
+    const SECTION_SPACING = 16;
+    
+    // 处理简介文本换行和星星显示
+    const specialtyLines = wrapText(specialty, TEXT_SIZE);
+    const specialtyText = specialtyLines.map((line, index) => {
+      const prefix = index === 0 ? '✨' : '';
+      const suffix = index === specialtyLines.length - 1 ? '✨' : '';
+      return `<text x="${TEXT_LEFT_MARGIN}" y="${CONTENT_START_Y + index * TEXT_SPACING}" class="card-text" font-size="${TEXT_SIZE}" fill="${textcolor}">${prefix}${line}${suffix}</text>`;
+    }).join('');
+
+    // 调整链接位置
+    const linkY = CONTENT_START_Y + (specialtyLines.length * TEXT_SPACING) + SECTION_SPACING;
+
+    // 计算总高度
+    const MIN_HEIGHT = 140;
+    const BOTTOM_PADDING = 30;  // 增加底部内边距
+    const totalHeight = Math.max(MIN_HEIGHT, linkY + BOTTOM_PADDING);
+    
+    // 头像相关的尺寸和位置
+    const AVATAR_SIZE = 96;  // 稍微缩小头像
+    const AVATAR_RADIUS = AVATAR_SIZE / 2;
+    const AVATAR_X = 36;  // 调整头像水平位置
+    // 确保头像垂直居中
+    const contentHeight = linkY - TITLE_Y;  // 内容区域高度
+    const AVATAR_Y = Math.max(
+      (totalHeight - AVATAR_SIZE) / 2,  // 相对整体高度居中
+      TITLE_Y + (contentHeight - AVATAR_SIZE) / 2  // 相对内容区域居中
+    );
+
+    // 修改字体处理
+    const fontWithFallback = `"${font}", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
+    const googleFontUrl = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}`;
+
+    return `<?xml version="1.0" encoding="UTF-8"?>
+      <svg width="100%" height="100%" viewBox="0 0 ${SVG_WIDTH} ${totalHeight}" 
+           xmlns="http://www.w3.org/2000/svg" 
+           xmlns:xlink="http://www.w3.org/1999/xlink">
+        ${defs}
+        <defs>
+          <style type="text/css">
+            @import url('${googleFontUrl}');
+            
+            .card-text, .card-title, .card-link { 
+              font-family: ${fontWithFallback};
+            }
+            .card-title {
+              font-weight: 700;
+            }
+            .card-text, .card-link {
+              font-weight: 400;
+            }
+          </style>
+        </defs>
+        
+        <!-- 卡片背景 -->
+        <rect x="0" y="0" width="560" height="${totalHeight}" rx="20" 
+              fill="${bgcolor.includes('linear-gradient') ? 'url(#cardGradient)' : bgcolor}"
+              stroke="#e2e8f0" stroke-width="1"
+              filter="url(#card-shadow)"/>
+        
+        <!-- 头像背景和片 -->
+        <g filter="url(#avatar-shadow)" transform="translate(-10, -10)">
+          <circle cx="${AVATAR_X + AVATAR_RADIUS}" cy="${AVATAR_Y + AVATAR_RADIUS}" r="${AVATAR_RADIUS}" fill="white"/>
+          <clipPath id="avatarClip">
+            <circle cx="${AVATAR_X + AVATAR_RADIUS}" cy="${AVATAR_Y + AVATAR_RADIUS}" r="${AVATAR_RADIUS}"/>
+          </clipPath>
+          <image x="${AVATAR_X}" y="${AVATAR_Y}" 
+                 width="${AVATAR_SIZE}" height="${AVATAR_SIZE}" 
+                 href="${avatarBase64}" 
+                 clip-path="url(#avatarClip)"/>
+        </g>
+        
+        <!-- 文本内容 -->
+        <text x="${TEXT_LEFT_MARGIN}" y="${TITLE_Y}" class="card-title" font-size="${TITLE_SIZE}" fill="${textcolor}">${truncatedName}</text>
+        ${specialtyText}
+        <a xlink:href="${redirectLink}" target="_blank">
+          <text x="${TEXT_LEFT_MARGIN}" y="${linkY}" class="card-link" font-size="${LINK_SIZE}" fill="${linkcolor}">${displayLink}</text>
+        </a>
+      </svg>`;
+}
+
+// 辅助函数：计算渐变度对应的坐标点
+function calculateGradientPoints(angle) {
+  const radian = (angle - 90) * Math.PI / 180;
+  const x1 = 50 + Math.cos(radian) * 50;
+  const y1 = 50 + Math.sin(radian) * 50;
+  const x2 = 50 - Math.cos(radian) * 50;
+  const y2 = 50 - Math.sin(radian) * 50;
+  return [x1, y1, x2, y2];
 }

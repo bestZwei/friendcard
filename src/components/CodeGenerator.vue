@@ -4,16 +4,32 @@
       <h2>生成代码</h2>
     </div>
     
+    <!-- 格式选择 -->
+    <div class="format-selector">
+      <label>
+        <input type="radio" v-model="format" value="html">
+        HTML (iframe)
+      </label>
+      <label>
+        <input type="radio" v-model="format" value="svg">
+        SVG (img)
+      </label>
+    </div>
+    
     <!-- 预览区域 -->
     <div class="preview-section">
       <h3>预览效果</h3>
       <div class="preview-container">
-        <iframe 
+        <iframe v-if="format === 'html'"
           :src="generatedUrl"
           style="border: none; width: 100%; height: 195px; overflow: hidden;"
           loading="lazy"
           title="Friend Card Preview"
         ></iframe>
+        <img v-else
+          :src="generatedUrl"
+          alt="Friend Card Preview"
+        />
       </div>
     </div>
     
@@ -31,23 +47,24 @@
 
     <div class="code-section">
       <div class="section-header">
-        <h3>iframe 嵌入代码</h3>
-        <button @click="copyToClipboard(iframeCode)" class="copy-btn">
+        <h3>{{ format === 'html' ? 'iframe 嵌入代码' : 'img 标签代码' }}</h3>
+        <button @click="copyToClipboard(embedCode)" class="copy-btn">
           复制代码
         </button>
       </div>
       <div class="code-container">
-        <code>{{ iframeCode }}</code>
+        <code>{{ embedCode }}</code>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useToast } from '../composables/useToast'
 
 const { showToastMessage } = useToast()
+const format = ref('html')
 
 const props = defineProps({
   formData: {
@@ -60,6 +77,10 @@ const baseUrl = 'https://friendcards.zwei.de.eu.org'
 
 const generatedUrl = computed(() => {
   const params = new URLSearchParams()
+  
+  if (format.value === 'svg') {
+    params.set('format', 'svg')
+  }
   
   if (props.formData.name) {
     params.set('name', props.formData.name)
@@ -92,19 +113,23 @@ const generatedUrl = computed(() => {
   return `${baseUrl}?${params.toString()}`
 })
 
-const generateIframeCode = (url) => {
-  return `<div style="max-width: 600px; margin: 0 auto;">
+const embedCode = computed(() => {
+  if (format.value === 'html') {
+    return `<div style="max-width: 600px; margin: 0 auto;">
   <iframe 
-    src="${url}"
+    src="${generatedUrl.value}"
     style="border: none; width: 100%; height: 195px; overflow: hidden;"
     loading="lazy"
     title="Friend Card"
   ></iframe>
 </div>`;
-};
-
-const iframeCode = computed(() => {
-  return generateIframeCode(generatedUrl.value);
+  } else {
+    return `<img 
+  src="${generatedUrl.value}"
+  alt="Friend Card"
+  style="width: 100%; max-width: 600px;"
+/>`;
+  }
 })
 
 const copyToClipboard = async (text) => {
@@ -115,6 +140,15 @@ const copyToClipboard = async (text) => {
     showToastMessage('复制失败，请手动复制')
   }
 }
+
+// 在组件中添加字体预加载
+watch(() => props.formData.font, (newFont) => {
+  // 动态加载字体
+  const link = document.createElement('link');
+  link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(newFont)}`;
+  link.rel = 'stylesheet';
+  document.head.appendChild(link);
+}, { immediate: true });
 </script>
 
 <style scoped>
@@ -147,6 +181,12 @@ const copyToClipboard = async (text) => {
   border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
   overflow: hidden;
+  background: #f8fafc;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 195px;
 }
 
 .code-section {
@@ -178,5 +218,42 @@ code {
 
 .dark code {
   color: var(--text-primary);
+}
+
+.format-selector {
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+}
+
+.format-selector label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.format-selector input[type="radio"] {
+  width: auto;
+  margin: 0;
+}
+
+.preview-container img {
+  width: 100%;
+  height: auto;
+  max-width: 560px;
+  display: block;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* 深色模式适配 */
+.dark .format-selector label {
+  color: var(--text-primary);
+}
+
+.dark .preview-container {
+  background: var(--bg-input);
+  border-color: var(--border-color);
 }
 </style> 
