@@ -9,10 +9,10 @@
           v-model="localData.name"
           type="text"
           placeholder="输入你的名字"
-          maxlength="14"
+          @input="validateNameLength"
           @blur="validateField('name')"
         >
-        <span class="char-count">{{ localData.name.length }}/14</span>
+        <span class="char-count">{{ nameWidth }}/14</span>
         <span class="error-text" v-if="errors.name">{{ errors.name }}</span>
       </div>
 
@@ -22,10 +22,11 @@
           id="specialty"
           v-model="localData.specialty"
           type="text"
-          maxlength="30"
           placeholder="一句话介绍"
+          @input="validateSpecialtyLength"
         >
-        <span class="char-count">{{ localData.specialty.length }}/30</span>
+        <span class="char-count">{{ specialtyWidth }}/30</span>
+        <span class="error-text" v-if="errors.specialty">{{ errors.specialty }}</span>
       </div>
 
       <div class="form-group">
@@ -186,6 +187,55 @@ const validateUrl = (url) => {
   }
 }
 
+const calculateCharWidth = (char) => {
+  if (/[0-9a-z]/.test(char)) {
+    return 0.5;
+  }
+  return 1;
+}
+
+const calculateStringWidth = (str) => {
+  return str.split('').reduce((total, char) => total + calculateCharWidth(char), 0);
+}
+
+const nameWidth = computed(() => {
+  return calculateStringWidth(localData.name).toFixed(1);
+});
+
+function validateNameLength(event) {
+  const input = event.target;
+  const text = input.value;
+  const width = calculateStringWidth(text);
+  
+  if (width > 14) {
+    // 如果超出最大宽度，逐个字符截取直到满足宽度要求
+    let i = text.length;
+    while (i > 0 && calculateStringWidth(text.slice(0, i)) > 14) {
+      i--;
+    }
+    localData.name = text.slice(0, i);
+  }
+}
+
+const specialtyWidth = computed(() => {
+  return calculateStringWidth(localData.specialty).toFixed(1);
+});
+
+function validateSpecialtyLength(event) {
+  const input = event.target;
+  const text = input.value;
+  const width = calculateStringWidth(text);
+  
+  if (width > 30) {
+    // 如果超出最大宽度，逐个字符截取直到满足宽度要求
+    let i = text.length;
+    while (i > 0 && calculateStringWidth(text.slice(0, i)) > 30) {
+      i--;
+    }
+    localData.specialty = text.slice(0, i);
+  }
+}
+
 const validateField = (field) => {
   errors.value[field] = ''
   
@@ -193,11 +243,13 @@ const validateField = (field) => {
     case 'name':
       if (!localData.name) {
         errors.value.name = '名称是必填项'
+      } else if (calculateStringWidth(localData.name) > 14) {
+        errors.value.name = '名称超出长度限制'
       }
       break
     case 'specialty':
-      if (!localData.specialty) {
-        errors.value.specialty = '简介是必填项'
+      if (calculateStringWidth(localData.specialty) > 30) {
+        errors.value.specialty = '简介超出长度限制'
       }
       break
     case 'link':

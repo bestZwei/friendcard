@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useToast } from '../composables/useToast'
 
 const { showToastMessage } = useToast()
@@ -140,6 +140,15 @@ const copyToClipboard = async (text) => {
     showToastMessage('复制失败，请手动复制')
   }
 }
+
+// 在组件中添加字体预加载
+watch(() => props.formData.font, (newFont) => {
+  // 动态加载字体
+  const link = document.createElement('link');
+  link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(newFont)}`;
+  link.rel = 'stylesheet';
+  document.head.appendChild(link);
+}, { immediate: true });
 </script>
 
 <style scoped>

@@ -288,25 +288,43 @@ function parseCSSGradient(gradient) {
   };
 }
 
-// 文本换行函数移到外部
+// 修改文本换行函数，使用字符宽度计算
 function wrapText(text, maxWidth, fontSize) {
   const words = text.split('');
   let lines = [];
   let currentLine = '';
-  
-  const charWidth = fontSize * 1.2;
-  const charsPerLine = Math.floor(maxWidth / charWidth);
+  let currentWidth = 0;
   
   for (let i = 0; i < words.length; i++) {
-    currentLine += words[i];
-    
-    if (currentLine.length >= charsPerLine || i === words.length - 1) {
+    const charWidth = calculateCharWidth(words[i]);
+    if (currentWidth + charWidth > maxWidth / fontSize * 1.2) {
       lines.push(currentLine);
-      currentLine = '';
+      currentLine = words[i];
+      currentWidth = charWidth;
+    } else {
+      currentLine += words[i];
+      currentWidth += charWidth;
     }
   }
   
+  if (currentLine) {
+    lines.push(currentLine);
+  }
+  
   return lines;
+}
+
+// 添加字符宽度计算函数
+function calculateCharWidth(char) {
+  if (/[0-9a-z]/.test(char)) {
+    return 0.5;  // 数字和小写字母算半个字符
+  }
+  return 1;  // 其他字符算一个字符
+}
+
+// 计算字符串的总宽度
+function calculateStringWidth(str) {
+  return str.split('').reduce((total, char) => total + calculateCharWidth(char), 0);
 }
 
 async function generateSVG(name, specialty, displayLink, redirectLink, avatarLink, domain, styles = {}) {
@@ -394,50 +412,94 @@ async function generateSVG(name, specialty, displayLink, redirectLink, avatarLin
     defs += `</defs>`;
 
     // 处理名称长度
-    const truncatedName = name.length > 14 ? name.slice(0, 14) : name;
+    const MAX_NAME_WIDTH = 14;
+    let truncatedName = name;
+    let currentWidth = calculateStringWidth(name);
+    
+    if (currentWidth > MAX_NAME_WIDTH) {
+      // 如果超出最大宽度，���个字符截取直到满足宽度要求
+      let i = name.length;
+      while (i > 0 && calculateStringWidth(name.slice(0, i)) > MAX_NAME_WIDTH) {
+        i--;
+      }
+      truncatedName = name.slice(0, i);
+    }
 
+    // 修改文本尺寸和间距
+    const TITLE_SIZE = 28;
+    const TEXT_SIZE = 18;
+    const LINK_SIZE = 16;
+    
+    // 调整基础间距
+    const BASE_PADDING = 20;
+    const TEXT_SPACING = 26;    // 增加行间距
+    const SECTION_SPACING = 16;
+    const TEXT_LEFT_MARGIN = 160;  // 减小头像与文本的间距
+    
+    // 调整起始位置
+    const TITLE_Y = 54;  // 微调标题位置
+    const CONTENT_START_Y = TITLE_Y + 40;  // 调整内容起始位置
+    
+    // 修改文本换行宽度
+    const TEXT_MAX_WIDTH = 30;  // 使用字符宽度单位
+    
     // 处理简介文本换行和星星显示
-    const specialtyLines = wrapText(specialty, 320, 16);
+    const specialtyLines = wrapText(specialty, TEXT_MAX_WIDTH, TEXT_SIZE);
     const specialtyText = specialtyLines.map((line, index) => {
       const prefix = index === 0 ? '✨' : '';
       const suffix = index === specialtyLines.length - 1 ? '✨' : '';
-      return `<text x="180" y="${100 + index * 20}" class="card-text" font-size="16" fill="${textcolor}">${prefix}${line}${suffix}</text>`;
+      return `<text x="${TEXT_LEFT_MARGIN}" y="${CONTENT_START_Y + index * TEXT_SPACING}" class="card-text" font-size="${TEXT_SIZE}" fill="${textcolor}">${prefix}${line}${suffix}</text>`;
     }).join('');
 
-    // 调整链接位置，基于简介行数
-    const linkY = 100 + (specialtyLines.length * 20) + 20;
+    // 调整链接位置
+    const linkY = CONTENT_START_Y + (specialtyLines.length * TEXT_SPACING) + SECTION_SPACING;
 
-    // 头像相关的尺寸和位置（移到这里）
-    const AVATAR_SIZE = 100;
-    const AVATAR_RADIUS = AVATAR_SIZE / 2;
-    const AVATAR_X = 40;
-    const AVATAR_Y = Math.max(80, (linkY + 40) / 2 - AVATAR_RADIUS);
-
-    // 简化字体处理
-    const fontWithFallback = `${font}, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
+    // 计算总高度
+    const MIN_HEIGHT = 140;
+    const BOTTOM_PADDING = 30;  // 增加底部内边距
+    const totalHeight = Math.max(MIN_HEIGHT, linkY + BOTTOM_PADDING);
     
+    // 头像相关的尺寸和位置
+    const AVATAR_SIZE = 96;  // 稍微缩小头像
+    const AVATAR_RADIUS = AVATAR_SIZE / 2;
+    const AVATAR_X = 36;  // 调整头像水平位置
+    // 确保头像垂直居中
+    const contentHeight = linkY - TITLE_Y;  // 内容区域高度
+    const AVATAR_Y = Math.max(
+      (totalHeight - AVATAR_SIZE) / 2,  // 相对整体高度居中
+      TITLE_Y + (contentHeight - AVATAR_SIZE) / 2  // 相对内容区域居中
+    );
+
+    // 修改字体处理
+    const fontWithFallback = `"${font}", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
+    const googleFontUrl = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}`;
+
     return `<?xml version="1.0" encoding="UTF-8"?>
-      <svg width="100%" height="100%" viewBox="0 0 560 ${Math.max(160, linkY + 40)}" 
+      <svg width="100%" height="100%" viewBox="0 0 560 ${totalHeight}" 
            xmlns="http://www.w3.org/2000/svg" 
            xmlns:xlink="http://www.w3.org/1999/xlink">
         ${defs}
-        <style>
-          .card-text { 
-            font-family: ${fontWithFallback};
-            font-weight: 400;
-          }
-          .card-title {
-            font-family: ${fontWithFallback};
-            font-weight: 700;
-          }
-          .card-link {
-            font-family: ${fontWithFallback};
-            font-weight: 400;
-          }
-        </style>
+        <defs>
+          <style type="text/css">
+            @import url('${googleFontUrl}');
+            
+            .card-text { 
+              font-family: ${fontWithFallback};
+              font-weight: 400;
+            }
+            .card-title {
+              font-family: ${fontWithFallback};
+              font-weight: 700;
+            }
+            .card-link {
+              font-family: ${fontWithFallback};
+              font-weight: 400;
+            }
+          </style>
+        </defs>
         
         <!-- 卡片背景 -->
-        <rect x="0" y="0" width="560" height="${Math.max(160, linkY + 40)}" rx="20" 
+        <rect x="0" y="0" width="560" height="${totalHeight}" rx="20" 
               fill="${bgcolor.includes('linear-gradient') ? 'url(#cardGradient)' : bgcolor}"
               stroke="#e2e8f0" stroke-width="1"
               filter="url(#card-shadow)"/>
@@ -452,15 +514,15 @@ async function generateSVG(name, specialty, displayLink, redirectLink, avatarLin
         </g>
         
         <!-- 文本内容 -->
-        <text x="180" y="60" class="card-title" font-size="24" fill="${textcolor}">${truncatedName}</text>
+        <text x="${TEXT_LEFT_MARGIN}" y="${TITLE_Y}" class="card-title" font-size="${TITLE_SIZE}" fill="${textcolor}">${truncatedName}</text>
         ${specialtyText}
         <a xlink:href="${redirectLink}" target="_blank">
-          <text x="180" y="${linkY}" class="card-link" font-size="14" fill="${linkcolor}">${displayLink}</text>
+          <text x="${TEXT_LEFT_MARGIN}" y="${linkY}" class="card-link" font-size="${LINK_SIZE}" fill="${linkcolor}">${displayLink}</text>
         </a>
       </svg>`;
 }
 
-// 辅助函数：计算渐变角度对应的坐标点
+// 辅助函数：计算渐变度对应的坐标点
 function calculateGradientPoints(angle) {
   const radian = (angle - 90) * Math.PI / 180;
   const x1 = 50 + Math.cos(radian) * 50;
