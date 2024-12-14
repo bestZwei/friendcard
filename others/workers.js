@@ -268,6 +268,26 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
   `;
 }
 
+function parseCSSGradient(gradient) {
+  // 提取角度
+  const angleMatch = gradient.match(/(\d+)deg/);
+  const angle = angleMatch ? parseInt(angleMatch[1]) : 135;
+  
+  // 提取所有颜色值和位置
+  const colorStops = gradient.match(/(#[a-fA-F0-9]{3,8}|rgba?\([^)]+\))(\s+\d+%)?/g) || [];
+  
+  return {
+    angle,
+    stops: colorStops.map(stop => {
+      const [color, position] = stop.split(/\s+/);
+      return {
+        color,
+        offset: position || null
+      };
+    })
+  };
+}
+
 async function generateSVG(name, specialty, displayLink, redirectLink, avatarLink, domain, styles = {}) {
   const { 
     bgcolor = 'linear-gradient(135deg, #e0e7ff, #f0f4f8)', 
@@ -305,7 +325,7 @@ async function generateSVG(name, specialty, displayLink, redirectLink, avatarLin
     `);
   }
 
-  // 合并渐变和阴影的定义
+  // 修改 defs 部分
   let defs = `
     <defs>
       <!-- 卡片阴影 -->
@@ -337,16 +357,57 @@ async function generateSVG(name, specialty, displayLink, redirectLink, avatarLin
 
   // 添加渐变定义
   if (bgcolor.includes('linear-gradient')) {
-    const colors = bgcolor.match(/#[a-fA-F0-9]{6}|rgba?\([^)]+\)/g) || ['#e0e7ff', '#f0f4f8'];
+    const gradient = parseCSSGradient(bgcolor);
+    const [x1, y1, x2, y2] = calculateGradientPoints(gradient.angle);
+    
+    // 为每个渐变色创建两个渐变定义，用于动画过渡
     defs += `
-      <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style="stop-color:${colors[0]};stop-opacity:1" />
-        <stop offset="100%" style="stop-color:${colors[1]};stop-opacity:1" />
+      <linearGradient id="cardGradient" x1="${x1}%" y1="${y1}%" x2="${x2}%" y2="${y2}%">
+        ${gradient.stops.map((stop, index) => `
+          <stop offset="${stop.offset || (index === 0 ? '0%' : '100%')}" 
+                style="stop-color:${stop.color};stop-opacity:1">
+            <animate 
+              attributeName="offset" 
+              values="${stop.offset || (index === 0 ? '0%;20%;0%' : '100%;80%;100%')}"
+              dur="15s"
+              repeatCount="indefinite"/>
+            <animate 
+              attributeName="stop-color"
+              values="${stop.color};${gradient.stops[(index + 1) % gradient.stops.length].color};${stop.color}"
+              dur="15s"
+              repeatCount="indefinite"/>
+          </stop>
+        `).join('')}
       </linearGradient>
+
+      <!-- 添加模糊效果 -->
+      <filter id="blur-effect">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="20" result="blur"/>
+        <feColorMatrix in="blur" type="saturate" values="1.5" result="color"/>
+        <feBlend in="SourceGraphic" in2="color" mode="normal"/>
+      </filter>
     `;
   }
 
   defs += `</defs>`;
+
+  // 修改背景矩形，添加动画效果
+  const backgroundRect = `
+    <rect x="0" y="0" width="560" height="160" rx="20" 
+          fill="${bgcolor.includes('linear-gradient') ? 'url(#cardGradient)' : bgcolor}"
+          stroke="#e2e8f0" stroke-width="1"
+          filter="url(#card-shadow)">
+      ${bgcolor.includes('linear-gradient') ? `
+        <animateTransform
+          attributeName="transform"
+          type="rotate"
+          from="0 280 80"
+          to="360 280 80"
+          dur="30s"
+          repeatCount="indefinite"/>
+      ` : ''}
+    </rect>
+  `;
 
   return `<?xml version="1.0" encoding="UTF-8"?>
     <svg width="100%" height="100%" viewBox="0 0 560 160" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -356,11 +417,13 @@ async function generateSVG(name, specialty, displayLink, redirectLink, avatarLin
         .card-text { font-family: '${font}', sans-serif; }
       </style>
       
-      <!-- 卡片背景 -->
-      <rect x="0" y="0" width="560" height="160" rx="20" 
-            fill="${bgcolor.includes('linear-gradient') ? 'url(#cardGradient)' : bgcolor}"
-            stroke="#e2e8f0" stroke-width="1"
-            filter="url(#card-shadow)"/>
+      <!-- 背景模糊效果层 -->
+      <g filter="url(#blur-effect)">
+        ${backgroundRect}
+      </g>
+      
+      <!-- 主背景层 -->
+      ${backgroundRect}
       
       <!-- 头像背景和图片 -->
       <g filter="url(#avatar-shadow)" transform="translate(-10, -10)">
@@ -376,4 +439,14 @@ async function generateSVG(name, specialty, displayLink, redirectLink, avatarLin
         <text x="140" y="130" font-size="14" fill="${linkcolor}">${displayLink}</text>
       </a>
     </svg>`;
+}
+
+// 辅助函数：计算渐变角度对应的坐标点
+function calculateGradientPoints(angle) {
+  const radian = (angle - 90) * Math.PI / 180;
+  const x1 = 50 + Math.cos(radian) * 50;
+  const y1 = 50 + Math.sin(radian) * 50;
+  const x2 = 50 - Math.cos(radian) * 50;
+  const y2 = 50 - Math.sin(radian) * 50;
+  return [x1, y1, x2, y2];
 }

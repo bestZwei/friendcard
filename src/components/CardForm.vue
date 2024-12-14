@@ -168,7 +168,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 const localData = reactive({ ...props.modelValue })
 
-// 当本地数据改变时，更新父组件
+// 当本地数据改变时，更新父组
 watch(localData, (newValue) => {
   emit('update:modelValue', { ...newValue })
 }, { deep: true })
@@ -178,7 +178,7 @@ const errors = ref({})
 const validateUrl = (url) => {
   if (!url) return true
   try {
-    new URL(url)
+    new URL(url.startsWith('http') ? url : `https://${url}`)
     return true
   } catch {
     return false
@@ -190,29 +190,29 @@ const validateField = (field) => {
   
   switch (field) {
     case 'name':
-      if (!localData.value.name) {
+      if (!localData.name) {
         errors.value.name = '名称是必填项'
       }
       break
     case 'specialty':
-      if (!localData.value.specialty) {
+      if (!localData.specialty) {
         errors.value.specialty = '简介是必填项'
       }
       break
     case 'link':
-      if (!localData.value.link) {
+      if (!localData.link) {
         errors.value.link = '显示链接是必填项'
-      } else if (!validateUrl(localData.value.link)) {
+      } else if (!validateUrl(localData.link)) {
         errors.value.link = '请输入有效的URL'
       }
       break
     case 'redirect':
-      if (localData.value.redirect && !validateUrl(localData.value.redirect)) {
+      if (localData.redirect && !validateUrl(localData.redirect)) {
         errors.value.redirect = '请输入有效的URL'
       }
       break
     case 'avatar':
-      if (localData.value.avatar && !validateUrl(localData.value.avatar)) {
+      if (localData.avatar && !validateUrl(localData.avatar)) {
         errors.value.avatar = '请输入有效的URL'
       }
       break
@@ -223,7 +223,7 @@ const validateField = (field) => {
       break
     case 'textcolor':
       if (localData.textcolor && !isValidColor(localData.textcolor)) {
-        errors.value.textcolor = '请输入有效的颜色值'
+        errors.value.textcolor = '请输入有效的颜��值'
       }
       break
     case 'linkcolor':
@@ -235,8 +235,12 @@ const validateField = (field) => {
 }
 
 const isValidColor = (color) => {
-  // 检查是否为有效的颜色值或渐变
-  return /^(#[0-9A-Fa-f]{6}|linear-gradient\(([^()]+)\))$/.test(color)
+  if (!color) return true
+  // 检查十六进制颜色
+  if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color)) return true
+  // 检查渐变
+  if (/^linear-gradient\(([^()]+)\)$/.test(color)) return true
+  return false
 }
 
 // 保存到本地存储
