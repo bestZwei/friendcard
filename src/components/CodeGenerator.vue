@@ -28,7 +28,6 @@
         ></iframe>
         <img v-else
           :src="generatedUrl"
-          style="width: 100%; max-width: 600px;"
           alt="Friend Card Preview"
         />
       </div>
@@ -173,6 +172,12 @@ const copyToClipboard = async (text) => {
   border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
   overflow: hidden;
+  background: #f8fafc;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 195px;
 }
 
 .code-section {
@@ -225,13 +230,21 @@ code {
 }
 
 .preview-container img {
+  width: 100%;
+  height: auto;
+  max-width: 560px;
   display: block;
-  margin: 0 auto;
   border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 /* 深色模式适配 */
 .dark .format-selector label {
   color: var(--text-primary);
+}
+
+.dark .preview-container {
+  background: var(--bg-input);
+  border-color: var(--border-color);
 }
 </style> 
