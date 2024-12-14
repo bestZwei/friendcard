@@ -9,9 +9,10 @@
           v-model="localData.name"
           type="text"
           placeholder="输入你的名字"
-          maxlength="50"
+          maxlength="14"
           @blur="validateField('name')"
         >
+        <span class="char-count">{{ localData.name.length }}/14</span>
         <span class="error-text" v-if="errors.name">{{ errors.name }}</span>
       </div>
 
@@ -223,7 +224,7 @@ const validateField = (field) => {
       break
     case 'textcolor':
       if (localData.textcolor && !isValidColor(localData.textcolor)) {
-        errors.value.textcolor = '请输入有效的颜��值'
+        errors.value.textcolor = '请输入有效的颜色值'
       }
       break
     case 'linkcolor':

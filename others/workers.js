@@ -288,6 +288,27 @@ function parseCSSGradient(gradient) {
   };
 }
 
+// 文本换行函数移到外部
+function wrapText(text, maxWidth, fontSize) {
+  const words = text.split('');
+  let lines = [];
+  let currentLine = '';
+  
+  const charWidth = fontSize * 1.2;
+  const charsPerLine = Math.floor(maxWidth / charWidth);
+  
+  for (let i = 0; i < words.length; i++) {
+    currentLine += words[i];
+    
+    if (currentLine.length >= charsPerLine || i === words.length - 1) {
+      lines.push(currentLine);
+      currentLine = '';
+    }
+  }
+  
+  return lines;
+}
+
 async function generateSVG(name, specialty, displayLink, redirectLink, avatarLink, domain, styles = {}) {
   const { 
     bgcolor = 'linear-gradient(135deg, #e0e7ff, #f0f4f8)', 
@@ -372,42 +393,69 @@ async function generateSVG(name, specialty, displayLink, redirectLink, avatarLin
 
     defs += `</defs>`;
 
-    // 修改背景矩形
-    const backgroundRect = `
-      <rect x="0" y="0" width="560" height="160" rx="20" 
-            fill="${bgcolor.includes('linear-gradient') ? 'url(#cardGradient)' : bgcolor}"
-            stroke="#e2e8f0" stroke-width="1"
-            filter="url(#card-shadow)"/>
-    `;
+    // 处理名称长度
+    const truncatedName = name.length > 14 ? name.slice(0, 14) : name;
 
+    // 处理简介文本换行和星星显示
+    const specialtyLines = wrapText(specialty, 320, 16);
+    const specialtyText = specialtyLines.map((line, index) => {
+      const prefix = index === 0 ? '✨' : '';
+      const suffix = index === specialtyLines.length - 1 ? '✨' : '';
+      return `<text x="180" y="${100 + index * 20}" class="card-text" font-size="16" fill="${textcolor}">${prefix}${line}${suffix}</text>`;
+    }).join('');
+
+    // 调整链接位置，基于简介行数
+    const linkY = 100 + (specialtyLines.length * 20) + 20;
+
+    // 头像相关的尺寸和位置（移到这里）
+    const AVATAR_SIZE = 100;
+    const AVATAR_RADIUS = AVATAR_SIZE / 2;
+    const AVATAR_X = 40;
+    const AVATAR_Y = Math.max(80, (linkY + 40) / 2 - AVATAR_RADIUS);
+
+    // 简化字体处理
+    const fontWithFallback = `${font}, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
+    
     return `<?xml version="1.0" encoding="UTF-8"?>
-      <svg width="100%" height="100%" viewBox="0 0 560 160" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <svg width="100%" height="100%" viewBox="0 0 560 ${Math.max(160, linkY + 40)}" 
+           xmlns="http://www.w3.org/2000/svg" 
+           xmlns:xlink="http://www.w3.org/1999/xlink">
         ${defs}
         <style>
-          @import url('https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}&amp;display=swap');
-          .card-text { font-family: '${font}', sans-serif; }
+          .card-text { 
+            font-family: ${fontWithFallback};
+            font-weight: 400;
+          }
+          .card-title {
+            font-family: ${fontWithFallback};
+            font-weight: 700;
+          }
+          .card-link {
+            font-family: ${fontWithFallback};
+            font-weight: 400;
+          }
         </style>
         
-        <!-- 背景模糊效果层 -->
-        <g filter="url(#blur-effect)">
-          ${backgroundRect}
-        </g>
-        
-        <!-- 主背景层 -->
-        ${backgroundRect}
+        <!-- 卡片背景 -->
+        <rect x="0" y="0" width="560" height="${Math.max(160, linkY + 40)}" rx="20" 
+              fill="${bgcolor.includes('linear-gradient') ? 'url(#cardGradient)' : bgcolor}"
+              stroke="#e2e8f0" stroke-width="1"
+              filter="url(#card-shadow)"/>
         
         <!-- 头像背景和图片 -->
         <g filter="url(#avatar-shadow)" transform="translate(-10, -10)">
-          <circle cx="80" cy="90" r="40" fill="white"/>
-          <image x="40" y="50" width="80" height="80" href="${avatarBase64}" 
-                 clip-path="circle(40px at 40px 40px)"/>
+          <circle cx="${AVATAR_X + AVATAR_RADIUS}" cy="${AVATAR_Y + AVATAR_RADIUS}" r="${AVATAR_RADIUS}" fill="white"/>
+          <image x="${AVATAR_X}" y="${AVATAR_Y}" 
+                 width="${AVATAR_SIZE}" height="${AVATAR_SIZE}" 
+                 href="${avatarBase64}" 
+                 clip-path="circle(${AVATAR_RADIUS}px at ${AVATAR_RADIUS}px ${AVATAR_RADIUS}px)"/>
         </g>
         
         <!-- 文本内容 -->
-        <text x="140" y="60" font-size="24" font-weight="bold" fill="${textcolor}">${name}</text>
-        <text x="140" y="100" class="card-text" font-size="16" fill="${textcolor}">✨${specialty}✨</text>
+        <text x="180" y="60" class="card-title" font-size="24" fill="${textcolor}">${truncatedName}</text>
+        ${specialtyText}
         <a xlink:href="${redirectLink}" target="_blank">
-          <text x="140" y="130" font-size="14" fill="${linkcolor}">${displayLink}</text>
+          <text x="180" y="${linkY}" class="card-link" font-size="14" fill="${linkcolor}">${displayLink}</text>
         </a>
       </svg>`;
 }
