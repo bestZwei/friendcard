@@ -44,7 +44,7 @@ async function handleRequest(request) {
 
     let response;
     if (format === 'svg') {
-      const svg = generateSVG(friendName, specialty, displayLink, redirectLink, avatarLink, domain, styles);
+      const svg = await generateSVG(friendName, specialty, displayLink, redirectLink, avatarLink, domain, styles);
       response = new Response(svg, {
         headers: { 
           'content-type': 'image/svg+xml',
@@ -268,7 +268,7 @@ function generateHTML(name, specialty, displayLink, redirectLink, avatarLink, do
   `;
 }
 
-function generateSVG(name, specialty, displayLink, redirectLink, avatarLink, domain, styles = {}) {
+async function generateSVG(name, specialty, displayLink, redirectLink, avatarLink, domain, styles = {}) {
   const { 
     bgcolor = 'linear-gradient(135deg, #e0e7ff, #f0f4f8)', 
     textcolor = '#1f2937', 
@@ -277,12 +277,32 @@ function generateSVG(name, specialty, displayLink, redirectLink, avatarLink, dom
   } = styles;
 
   let avatarURL;
-  if (avatarLink) {
-    avatarURL = avatarLink;
-  } else if (displayLink && displayLink !== 'https://friendcard.is-an.org') {
-    avatarURL = `https://api.faviconkit.com/${domain}/128`;
-  } else {
-    avatarURL = 'https://friendcard.is-an.org/favicon.svg';
+  let avatarBase64;
+  
+  try {
+    if (avatarLink) {
+      const response = await fetch(avatarLink);
+      const buffer = await response.arrayBuffer();
+      avatarBase64 = `data:${response.headers.get('content-type')};base64,${btoa(String.fromCharCode(...new Uint8Array(buffer)))}`;
+    } else if (displayLink && displayLink !== 'https://friendcard.is-an.org') {
+      const response = await fetch(`https://api.faviconkit.com/${domain}/128`);
+      const buffer = await response.arrayBuffer();
+      avatarBase64 = `data:${response.headers.get('content-type')};base64,${btoa(String.fromCharCode(...new Uint8Array(buffer)))}`;
+    } else {
+      // 默认头像也转为base64
+      const response = await fetch('https://friendcard.is-an.org/favicon.svg');
+      const buffer = await response.arrayBuffer();
+      avatarBase64 = `data:${response.headers.get('content-type')};base64,${btoa(String.fromCharCode(...new Uint8Array(buffer)))}`;
+    }
+  } catch (error) {
+    console.error('Error loading avatar:', error);
+    // 如果加载失败，使用一个简单的内嵌SVG作为默认头像
+    avatarBase64 = 'data:image/svg+xml;base64,' + btoa(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+        <rect width="128" height="128" fill="#e5e7eb"/>
+        <text x="64" y="64" text-anchor="middle" dy=".3em" fill="#9ca3af" font-size="64">?</text>
+      </svg>
+    `);
   }
 
   // 合并渐变和阴影的定义
@@ -329,31 +349,31 @@ function generateSVG(name, specialty, displayLink, redirectLink, avatarLink, dom
   defs += `</defs>`;
 
   return `<?xml version="1.0" encoding="UTF-8"?>
-<svg width="100%" height="100%" viewBox="0 0 560 160" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  ${defs}
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}&amp;display=swap');
-    .card-text { font-family: '${font}', sans-serif; }
-  </style>
-  
-  <!-- 卡片背景 -->
-  <rect x="0" y="0" width="560" height="160" rx="20" 
-        fill="${bgcolor.includes('linear-gradient') ? 'url(#cardGradient)' : bgcolor}"
-        stroke="#e2e8f0" stroke-width="1"
-        filter="url(#card-shadow)"/>
-  
-  <!-- 头像背景和图片 -->
-  <g filter="url(#avatar-shadow)" transform="translate(-10, -10)">
-    <circle cx="80" cy="90" r="40" fill="white"/>
-    <image x="40" y="50" width="80" height="80" href="${avatarURL}" 
-           clip-path="circle(40px at 40px 40px)"/>
-  </g>
-  
-  <!-- 文本内容 -->
-  <text x="140" y="60" font-size="24" font-weight="bold" fill="${textcolor}">${name}</text>
-  <text x="140" y="100" class="card-text" font-size="16" fill="${textcolor}">✨${specialty}✨</text>
-  <a xlink:href="${redirectLink}" target="_blank">
-    <text x="140" y="130" font-size="14" fill="${linkcolor}">${displayLink}</text>
-  </a>
-</svg>`;
+    <svg width="100%" height="100%" viewBox="0 0 560 160" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      ${defs}
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}&amp;display=swap');
+        .card-text { font-family: '${font}', sans-serif; }
+      </style>
+      
+      <!-- 卡片背景 -->
+      <rect x="0" y="0" width="560" height="160" rx="20" 
+            fill="${bgcolor.includes('linear-gradient') ? 'url(#cardGradient)' : bgcolor}"
+            stroke="#e2e8f0" stroke-width="1"
+            filter="url(#card-shadow)"/>
+      
+      <!-- 头像背景和图片 -->
+      <g filter="url(#avatar-shadow)" transform="translate(-10, -10)">
+        <circle cx="80" cy="90" r="40" fill="white"/>
+        <image x="40" y="50" width="80" height="80" href="${avatarBase64}" 
+               clip-path="circle(40px at 40px 40px)"/>
+      </g>
+      
+      <!-- 文本内容 -->
+      <text x="140" y="60" font-size="24" font-weight="bold" fill="${textcolor}">${name}</text>
+      <text x="140" y="100" class="card-text" font-size="16" fill="${textcolor}">✨${specialty}✨</text>
+      <a xlink:href="${redirectLink}" target="_blank">
+        <text x="140" y="130" font-size="14" fill="${linkcolor}">${displayLink}</text>
+      </a>
+    </svg>`;
 }
