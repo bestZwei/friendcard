@@ -288,8 +288,22 @@ function parseCSSGradient(gradient) {
   };
 }
 
-// 修改文本换行函数，使用字符宽度计算
-function wrapText(text, maxWidth, fontSize) {
+// 布局相关的常量
+const SVG_WIDTH = 560;          // SVG 总宽度
+const AVATAR_X = 36;            // 头像左边距
+const AVATAR_SIZE = 96;         // 头像尺寸
+const SECTION_GAP = 24;         // 头像区域和文本区域的间隔，进一步缩小
+const TEXT_LEFT_MARGIN = AVATAR_X + AVATAR_SIZE + SECTION_GAP;  // 文本起始位置
+
+// 文本相关的常量
+const TITLE_SIZE = 28;          // 标题字号
+const TEXT_SIZE = 18;           // 简介字号
+const LINK_SIZE = 16;           // 链接字号
+const MAX_NAME_WIDTH = 14;      // 名称最大宽度
+const MAX_LINE_CHARS = 19;      // 简介每行最大中文字符数
+
+// 修改文本换行函数
+function wrapText(text, fontSize) {
   const words = text.split('');
   let lines = [];
   let currentLine = '';
@@ -297,7 +311,8 @@ function wrapText(text, maxWidth, fontSize) {
   
   for (let i = 0; i < words.length; i++) {
     const charWidth = calculateCharWidth(words[i]);
-    if (currentWidth + charWidth > maxWidth / fontSize * 1.2) {
+    // 使用中文字符数作为换行标准（19个中文字符）
+    if (currentWidth + charWidth > MAX_LINE_CHARS) {
       lines.push(currentLine);
       currentLine = words[i];
       currentWidth = charWidth;
@@ -327,6 +342,8 @@ function calculateStringWidth(str) {
   return str.split('').reduce((total, char) => total + calculateCharWidth(char), 0);
 }
 
+
+// 在生成 SVG 时使用这些常量
 async function generateSVG(name, specialty, displayLink, redirectLink, avatarLink, domain, styles = {}) {
   const { 
     bgcolor = 'linear-gradient(135deg, #e0e7ff, #f0f4f8)', 
@@ -417,7 +434,7 @@ async function generateSVG(name, specialty, displayLink, redirectLink, avatarLin
     let currentWidth = calculateStringWidth(name);
     
     if (currentWidth > MAX_NAME_WIDTH) {
-      // 如果超出最大宽度，���个字符截取直到满足宽度要求
+      // 如果超出最大宽度，个字符截取直到满足宽度要求
       let i = name.length;
       while (i > 0 && calculateStringWidth(name.slice(0, i)) > MAX_NAME_WIDTH) {
         i--;
@@ -425,26 +442,14 @@ async function generateSVG(name, specialty, displayLink, redirectLink, avatarLin
       truncatedName = name.slice(0, i);
     }
 
-    // 修改文本尺寸和间距
-    const TITLE_SIZE = 28;
-    const TEXT_SIZE = 18;
-    const LINK_SIZE = 16;
-    
-    // 调整基础间距
-    const BASE_PADDING = 20;
-    const TEXT_SPACING = 26;    // 增加行间距
-    const SECTION_SPACING = 16;
-    const TEXT_LEFT_MARGIN = 160;  // 减小头像与文本的间距
-    
     // 调整起始位置
-    const TITLE_Y = 54;  // 微调标题位置
-    const CONTENT_START_Y = TITLE_Y + 40;  // 调整内容起始位置
-    
-    // 修改文本换行宽度
-    const TEXT_MAX_WIDTH = 30;  // 使用字符宽度单位
+    const TITLE_Y = 54;
+    const CONTENT_START_Y = TITLE_Y + 43;
+    const TEXT_SPACING = 26;
+    const SECTION_SPACING = 16;
     
     // 处理简介文本换行和星星显示
-    const specialtyLines = wrapText(specialty, TEXT_MAX_WIDTH, TEXT_SIZE);
+    const specialtyLines = wrapText(specialty, TEXT_SIZE);
     const specialtyText = specialtyLines.map((line, index) => {
       const prefix = index === 0 ? '✨' : '';
       const suffix = index === specialtyLines.length - 1 ? '✨' : '';
@@ -475,7 +480,7 @@ async function generateSVG(name, specialty, displayLink, redirectLink, avatarLin
     const googleFontUrl = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}`;
 
     return `<?xml version="1.0" encoding="UTF-8"?>
-      <svg width="100%" height="100%" viewBox="0 0 560 ${totalHeight}" 
+      <svg width="100%" height="100%" viewBox="0 0 ${SVG_WIDTH} ${totalHeight}" 
            xmlns="http://www.w3.org/2000/svg" 
            xmlns:xlink="http://www.w3.org/1999/xlink">
         ${defs}
@@ -483,16 +488,13 @@ async function generateSVG(name, specialty, displayLink, redirectLink, avatarLin
           <style type="text/css">
             @import url('${googleFontUrl}');
             
-            .card-text { 
+            .card-text, .card-title, .card-link { 
               font-family: ${fontWithFallback};
-              font-weight: 400;
             }
             .card-title {
-              font-family: ${fontWithFallback};
               font-weight: 700;
             }
-            .card-link {
-              font-family: ${fontWithFallback};
+            .card-text, .card-link {
               font-weight: 400;
             }
           </style>
@@ -504,13 +506,16 @@ async function generateSVG(name, specialty, displayLink, redirectLink, avatarLin
               stroke="#e2e8f0" stroke-width="1"
               filter="url(#card-shadow)"/>
         
-        <!-- 头像背景和图片 -->
+        <!-- 头像背景和片 -->
         <g filter="url(#avatar-shadow)" transform="translate(-10, -10)">
           <circle cx="${AVATAR_X + AVATAR_RADIUS}" cy="${AVATAR_Y + AVATAR_RADIUS}" r="${AVATAR_RADIUS}" fill="white"/>
+          <clipPath id="avatarClip">
+            <circle cx="${AVATAR_X + AVATAR_RADIUS}" cy="${AVATAR_Y + AVATAR_RADIUS}" r="${AVATAR_RADIUS}"/>
+          </clipPath>
           <image x="${AVATAR_X}" y="${AVATAR_Y}" 
                  width="${AVATAR_SIZE}" height="${AVATAR_SIZE}" 
                  href="${avatarBase64}" 
-                 clip-path="circle(${AVATAR_RADIUS}px at ${AVATAR_RADIUS}px ${AVATAR_RADIUS}px)"/>
+                 clip-path="url(#avatarClip)"/>
         </g>
         
         <!-- 文本内容 -->
