@@ -80,8 +80,8 @@ const extractDomain = (url) => {
   try {
     // 确保 URL 有协议前缀
     const fullUrl = url.startsWith('http') ? url : `https://${url}`
-    const urlObj = new URL(fullUrl)
-    return urlObj.hostname
+    // 直接返回处理好的 URL，不再只提取域名
+    return fullUrl
   } catch (e) {
     // 如果 URL 解析失败，返回原始值
     return url
@@ -110,7 +110,7 @@ const generatedUrl = computed(() => {
   if (props.formData.avatar) {
     params.set('avatar', props.formData.avatar)
   } else if (props.formData.link) {
-    // 如果没有提供自定义头像，但提供了链接，则使用链接的域名生成 favicon URL
+    // 如果没有提供自定义头像，但提供了链接，则使用链接生成 favicon URL
     const domain = extractDomain(props.formData.link)
     params.set('avatar', `https://favicon.is-an.org/?domain=${domain}&sz=128`)
   }
