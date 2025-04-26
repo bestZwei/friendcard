@@ -75,6 +75,19 @@ const props = defineProps({
 
 const baseUrl = 'https://friendcards.zwei.de.eu.org'
 
+// 从 URL 中提取域名
+const extractDomain = (url) => {
+  try {
+    // 确保 URL 有协议前缀
+    const fullUrl = url.startsWith('http') ? url : `https://${url}`
+    const urlObj = new URL(fullUrl)
+    return urlObj.hostname
+  } catch (e) {
+    // 如果 URL 解析失败，返回原始值
+    return url
+  }
+}
+
 const generatedUrl = computed(() => {
   const params = new URLSearchParams()
   
@@ -96,6 +109,10 @@ const generatedUrl = computed(() => {
   }
   if (props.formData.avatar) {
     params.set('avatar', props.formData.avatar)
+  } else if (props.formData.link) {
+    // 如果没有提供自定义头像，但提供了链接，则使用链接的域名生成 favicon URL
+    const domain = extractDomain(props.formData.link)
+    params.set('avatar', `https://favicon.is-an.org/?domain=${domain}&sz=128`)
   }
   if (props.formData.bgcolor && props.formData.bgcolor !== 'linear-gradient(135deg, #e0e7ff, #f0f4f8)') {
     params.set('bgcolor', props.formData.bgcolor)
@@ -256,4 +273,4 @@ code {
   background: var(--bg-input);
   border-color: var(--border-color);
 }
-</style> 
+</style>
